@@ -1,8 +1,14 @@
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { isNative } from "@/lib/native/platform";
 
 /**
- * Placeholder for an AdMob banner/native unit.
- * When wrapped with Capacitor, mount the AdMob banner in place of this element.
+ * Inline ad placement.
+ *
+ * On the native (Capacitor) build the AdMob banner is an anchored overlay
+ * managed by `useAdMob()` in the root, so this component renders nothing there
+ * and simply reserves no extra space. On the web build it renders a labelled
+ * placeholder so the layout can be reviewed in the browser.
  */
 export function AdSlot({
   label = "Ad space — AdMob banner",
@@ -11,6 +17,11 @@ export function AdSlot({
   label?: string;
   className?: string;
 }) {
+  const [native, setNative] = useState(false);
+  useEffect(() => setNative(isNative()), []);
+
+  if (native) return null;
+
   return (
     <div
       className={cn(

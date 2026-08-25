@@ -108,10 +108,25 @@ function MatchPage() {
               <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-gradient-primary shadow-glow">
                 <Play className="h-6 w-6 fill-primary-foreground text-primary-foreground" />
               </span>
-              <p className="mt-3 text-sm font-semibold">Stream player</p>
-              <p className="mt-1 px-6 text-xs text-muted-foreground">
-                Connect your own licensed stream source to enable playback.
+              <p className="mt-3 text-sm font-semibold">
+                {unlocked ? "Stream ready" : "Stream player"}
               </p>
+              <p className="mt-1 px-6 text-xs text-muted-foreground">
+                {unlocked
+                  ? "Connect your licensed stream source to start playback."
+                  : "Watch a short ad to unlock the HD stream for this match."}
+              </p>
+              {!unlocked && (
+                <button
+                  type="button"
+                  onClick={unlockStream}
+                  disabled={unlocking}
+                  className="mt-3 inline-flex items-center gap-2 rounded-full bg-gradient-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-glow disabled:opacity-60"
+                >
+                  {unlocking && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                  Watch ad to unlock
+                </button>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2 border-t border-border px-3 py-2.5 text-xs text-muted-foreground">
@@ -121,6 +136,13 @@ function MatchPage() {
         </section>
 
         <AdSlot />
+
+        <OddsPanel match={match} />
+
+        <MatchInfoPanel match={match} />
+
+        <AdSlot label="Ad space — AdMob medium rectangle" className="h-52" />
+
 
         {match.events.length > 0 && (
           <section className="rounded-2xl bg-card p-4 ring-1 ring-border">

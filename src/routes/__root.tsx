@@ -82,16 +82,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#0b1a14" },
-      { title: "Football Live TV — Live Football Scores & TV Guide" },
+      { title: "Football Live TV — Live Scores, Fixtures & Streaming Guide" },
       {
         name: "description",
         content:
-          "Live football scores, fixtures, league tables, TV channel listings and news for every top league.",
+          "Live football scores, TV channel listings, streaming links, fixtures, league tables and news for every top league.",
       },
-      { property: "og:title", content: "Football Live TV — Live Football Scores & TV Guide" },
+      { property: "og:title", content: "Football Live TV — Live Scores, Fixtures & Streaming Guide" },
       {
         property: "og:description",
-        content: "Follow live football scores, fixtures, tables and news in one fast app.",
+        content: "Follow live football scores, TV channels, fixtures, tables and news in one fast app.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

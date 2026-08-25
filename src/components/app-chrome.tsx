@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { CalendarDays, Home, Newspaper, Star, Trophy } from "lucide-react";
+import { Bell, CalendarDays, Home, Newspaper, Star, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
@@ -22,9 +22,14 @@ export function TopBar() {
             Footy<span className="text-primary">Live</span>
           </span>
         </Link>
-        <span className="ml-auto rounded-full bg-surface-2 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          HD
-        </span>
+        <Link
+          to="/alerts"
+          aria-label="Match alerts"
+          className="ml-auto grid h-9 w-9 place-items-center rounded-full bg-surface-2 text-muted-foreground"
+          activeProps={{ className: "ml-auto grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-primary" }}
+        >
+          <Bell className="h-4.5 w-4.5" />
+        </Link>
       </div>
     </header>
   );

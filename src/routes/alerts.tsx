@@ -110,6 +110,21 @@ function AlertsPage() {
         />
       </section>
 
+      <Link
+        to="/settings"
+        className="flex items-center gap-3 rounded-2xl bg-card p-4 ring-1 ring-border"
+      >
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold">Per-league & per-club rules</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Different lead times and alert types for each competition or club.
+          </p>
+        </div>
+        <span className="shrink-0 text-xs font-bold text-primary">Open</span>
+      </Link>
+
+
+
       <section className="rounded-2xl bg-card p-4 ring-1 ring-border">
         <h2 className="font-display text-sm font-bold uppercase tracking-widest text-primary">
           Remind me

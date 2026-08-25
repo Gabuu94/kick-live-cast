@@ -14,8 +14,10 @@ import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as FixturesRouteImport } from './routes/fixtures'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StandingsRouteImport } from './routes/standings'
 import { Route as MatchMatchIdRouteImport } from './routes/match.$matchId'
+import { Route as ApiPublicPushEventsRouteImport } from './routes/api.public.push.events'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -42,6 +44,11 @@ const NewsRoute = NewsRouteImport.update({
   path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StandingsRoute = StandingsRouteImport.update({
   id: '/standings',
   path: '/standings',
@@ -52,6 +59,11 @@ const MatchMatchIdRoute = MatchMatchIdRouteImport.update({
   path: '/match/$matchId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPushEventsRoute = ApiPublicPushEventsRouteImport.update({
+  id: '/api/public/push/events',
+  path: '/api/public/push/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -59,8 +71,10 @@ export interface FileRoutesByFullPath {
   '/favorites': typeof FavoritesRoute
   '/fixtures': typeof FixturesRoute
   '/news': typeof NewsRoute
+  '/settings': typeof SettingsRoute
   '/standings': typeof StandingsRoute
   '/match/$matchId': typeof MatchMatchIdRoute
+  '/api/public/push/events': typeof ApiPublicPushEventsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -68,8 +82,10 @@ export interface FileRoutesByTo {
   '/favorites': typeof FavoritesRoute
   '/fixtures': typeof FixturesRoute
   '/news': typeof NewsRoute
+  '/settings': typeof SettingsRoute
   '/standings': typeof StandingsRoute
   '/match/$matchId': typeof MatchMatchIdRoute
+  '/api/public/push/events': typeof ApiPublicPushEventsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -78,8 +94,10 @@ export interface FileRoutesById {
   '/favorites': typeof FavoritesRoute
   '/fixtures': typeof FixturesRoute
   '/news': typeof NewsRoute
+  '/settings': typeof SettingsRoute
   '/standings': typeof StandingsRoute
   '/match/$matchId': typeof MatchMatchIdRoute
+  '/api/public/push/events': typeof ApiPublicPushEventsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -89,8 +107,10 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/fixtures'
     | '/news'
+    | '/settings'
     | '/standings'
     | '/match/$matchId'
+    | '/api/public/push/events'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -98,8 +118,10 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/fixtures'
     | '/news'
+    | '/settings'
     | '/standings'
     | '/match/$matchId'
+    | '/api/public/push/events'
   id:
     | '__root__'
     | '/'
@@ -107,8 +129,10 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/fixtures'
     | '/news'
+    | '/settings'
     | '/standings'
     | '/match/$matchId'
+    | '/api/public/push/events'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,8 +141,10 @@ export interface RootRouteChildren {
   FavoritesRoute: typeof FavoritesRoute
   FixturesRoute: typeof FixturesRoute
   NewsRoute: typeof NewsRoute
+  SettingsRoute: typeof SettingsRoute
   StandingsRoute: typeof StandingsRoute
   MatchMatchIdRoute: typeof MatchMatchIdRoute
+  ApiPublicPushEventsRoute: typeof ApiPublicPushEventsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -158,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/standings': {
       id: '/standings'
       path: '/standings'
@@ -172,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MatchMatchIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/push/events': {
+      id: '/api/public/push/events'
+      path: '/api/public/push/events'
+      fullPath: '/api/public/push/events'
+      preLoaderRoute: typeof ApiPublicPushEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -181,8 +221,10 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritesRoute: FavoritesRoute,
   FixturesRoute: FixturesRoute,
   NewsRoute: NewsRoute,
+  SettingsRoute: SettingsRoute,
   StandingsRoute: StandingsRoute,
   MatchMatchIdRoute: MatchMatchIdRoute,
+  ApiPublicPushEventsRoute: ApiPublicPushEventsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,41 +1,25 @@
-import { isNative } from "./platform";
-import { matches, type Match } from "@/lib/football-data";
+import { isNative, nativePlatform } from "./platform";
+import { matches, getMatch, type Match } from "@/lib/football-data";
+import {
+  DEFAULT_PREFS,
+  resolvePrefs,
+  loadPrefs,
+  savePrefs,
+  type AlertPrefs,
+  type ScopePrefs,
+} from "@/lib/push/prefs";
+import {
+  loadLedger,
+  saveLedger,
+  shouldDeliver,
+  type PushEvent,
+} from "@/lib/push/dedupe";
+import { registerDevice, unregisterDevice } from "@/lib/push.functions";
+
+export type { AlertPrefs, ScopePrefs };
+export { DEFAULT_PREFS, loadPrefs, savePrefs };
 
 export type PermissionState = "granted" | "denied" | "prompt" | "unsupported";
-
-export interface AlertPrefs {
-  kickoff: boolean;
-  kickoffMinutesBefore: number;
-  goals: boolean;
-  fullTime: boolean;
-}
-
-export const DEFAULT_PREFS: AlertPrefs = {
-  kickoff: true,
-  kickoffMinutesBefore: 15,
-  goals: true,
-  fullTime: true,
-};
-
-export const PREFS_KEY = "footylive:alerts";
-
-export function loadPrefs(): AlertPrefs {
-  if (typeof window === "undefined") return DEFAULT_PREFS;
-  try {
-    const raw = localStorage.getItem(PREFS_KEY);
-    return raw ? { ...DEFAULT_PREFS, ...JSON.parse(raw) } : DEFAULT_PREFS;
-  } catch {
-    return DEFAULT_PREFS;
-  }
-}
-
-export function savePrefs(prefs: AlertPrefs) {
-  try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
-  } catch {
-    /* ignore */
-  }
-}
 
 /* ------------------------------------------------------------------ */
 /* Permissions                                                         */
@@ -58,7 +42,6 @@ export async function requestPermission(): Promise<PermissionState> {
     const { LocalNotifications } = await import("@capacitor/local-notifications");
     const res = await LocalNotifications.requestPermissions();
     if (res.display !== "granted") return "denied";
-    // Remote pushes (score alerts sent from a server) need the push plugin too.
     try {
       const { PushNotifications } = await import("@capacitor/push-notifications");
       const perm = await PushNotifications.requestPermissions();
@@ -74,26 +57,138 @@ export async function requestPermission(): Promise<PermissionState> {
 }
 
 /* ------------------------------------------------------------------ */
-/* Device token (for server-sent live score pushes)                    */
+/* Device identity + backend registration                              */
 /* ------------------------------------------------------------------ */
 
-export async function registerPushListeners(onToken?: (token: string) => void) {
-  if (!isNative()) return;
-  const { PushNotifications } = await import("@capacitor/push-notifications");
-  await PushNotifications.removeAllListeners();
-  await PushNotifications.addListener("registration", (t) => {
-    console.info("Push token", t.value);
-    onToken?.(t.value);
-  });
-  await PushNotifications.addListener("registrationError", (e) =>
-    console.warn("Push registration error", e),
-  );
+const DEVICE_KEY = "footylive:device-id";
+const TOKEN_KEY = "footylive:push-token";
+
+export function deviceId(): string {
+  if (typeof window === "undefined") return "ssr-placeholder-device";
+  let id = localStorage.getItem(DEVICE_KEY);
+  if (!id) {
+    id = `dev_${crypto.randomUUID?.() ?? Math.random().toString(36).slice(2)}`;
+    localStorage.setItem(DEVICE_KEY, id);
+  }
+  return id;
+}
+
+export function storedPushToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+function storePushToken(token: string) {
+  try {
+    localStorage.setItem(TOKEN_KEY, token);
+  } catch {
+    /* ignore */
+  }
+}
+
+/**
+ * Publishes this device's token, followed clubs and preferences to the FCM
+ * sender so it knows who to notify. Safe to call often — it is a no-op until a
+ * push token exists (i.e. on native builds after permission is granted).
+ */
+export async function syncDeviceRegistration(favorites: string[], prefs: AlertPrefs) {
+  const token = storedPushToken();
+  if (!token) return { ok: false as const, reason: "no-token" as const };
+  try {
+    await registerDevice({
+      data: {
+        deviceId: deviceId(),
+        token,
+        platform: nativePlatform(),
+        favorites,
+        prefs,
+      },
+    });
+    return { ok: true as const };
+  } catch (err) {
+    console.warn("Device registration failed", err);
+    return { ok: false as const, reason: "error" as const };
+  }
+}
+
+export async function dropDeviceRegistration() {
+  try {
+    await unregisterDevice({ data: { deviceId: deviceId() } });
+  } catch {
+    /* ignore */
+  }
 }
 
 /* ------------------------------------------------------------------ */
-/* Kick-off reminders (scheduled on-device, no server required)        */
+/* Push listeners + deep links                                         */
 /* ------------------------------------------------------------------ */
 
+/** Extracts a match id from a deep link, push payload or notification extras. */
+export function matchIdFromPayload(payload: unknown): string | null {
+  if (!payload || typeof payload !== "object") return null;
+  const data = payload as Record<string, unknown>;
+  const direct = data["matchId"];
+  if (typeof direct === "string" && direct) return direct;
+  const link = data["link"];
+  if (typeof link === "string") return matchIdFromUrl(link);
+  return null;
+}
+
+/** footylive://match/m-101 or https://footylive.app/match/m-101 */
+export function matchIdFromUrl(url: string): string | null {
+  const m = /(?:^|\/)match\/([A-Za-z0-9_-]+)/.exec(url);
+  return m?.[1] ?? null;
+}
+
+export interface PushListenerOptions {
+  onToken?: (token: string) => void;
+  /** Called when the user taps an alert or opens a footylive:// deep link. */
+  onOpenMatch?: (matchId: string) => void;
+}
+
+export async function registerPushListeners(options: PushListenerOptions = {}) {
+  if (!isNative()) return;
+
+  const { LocalNotifications } = await import("@capacitor/local-notifications");
+  await LocalNotifications.removeAllListeners();
+  await LocalNotifications.addListener("localNotificationActionPerformed", (action) => {
+    const id = matchIdFromPayload(action.notification.extra);
+    if (id) options.onOpenMatch?.(id);
+  });
+
+  try {
+    const { PushNotifications } = await import("@capacitor/push-notifications");
+    await PushNotifications.removeAllListeners();
+    await PushNotifications.addListener("registration", (t) => {
+      storePushToken(t.value);
+      options.onToken?.(t.value);
+    });
+    await PushNotifications.addListener("registrationError", (e) =>
+      console.warn("Push registration error", e),
+    );
+    await PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
+      const id = matchIdFromPayload(action.notification.data);
+      if (id) options.onOpenMatch?.(id);
+    });
+  } catch (err) {
+    console.warn("Push plugin unavailable", err);
+  }
+
+  try {
+    const { App } = await import("@capacitor/app");
+    await App.removeAllListeners();
+    await App.addListener("appUrlOpen", ({ url }) => {
+      const id = matchIdFromUrl(url);
+      if (id) options.onOpenMatch?.(id);
+    });
+  } catch (err) {
+    console.warn("App plugin unavailable", err);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Kick-off reminders (scheduled on-device)                            */
+/* ------------------------------------------------------------------ */
 
 // keep ids inside the 32-bit range Android requires
 function notificationId(matchId: string) {
@@ -103,14 +198,22 @@ function notificationId(matchId: string) {
 }
 
 export function matchesForTeams(teamIds: string[]): Match[] {
-  return matches.filter(
-    (m) => teamIds.includes(m.home.id) || teamIds.includes(m.away.id),
-  );
+  return matches.filter((m) => teamIds.includes(m.home.id) || teamIds.includes(m.away.id));
+}
+
+function scopeTarget(m: Match) {
+  return { leagueId: m.leagueId, homeTeamId: m.home.id, awayTeamId: m.away.id };
+}
+
+/** Effective preferences for one match, after league/club overrides. */
+export function prefsForMatch(prefs: AlertPrefs, m: Match): ScopePrefs {
+  return resolvePrefs(prefs, scopeTarget(m));
 }
 
 /**
  * Cancels previous reminders and re-schedules kick-off alerts for every
- * upcoming match involving a followed team.
+ * upcoming match involving a followed team, honouring per-league / per-club
+ * lead times.
  */
 export async function syncKickoffAlerts(favorites: string[], prefs: AlertPrefs) {
   if (!isNative()) return 0;
@@ -120,7 +223,7 @@ export async function syncKickoffAlerts(favorites: string[], prefs: AlertPrefs) 
   if (pending.notifications.length) {
     await LocalNotifications.cancel({ notifications: pending.notifications });
   }
-  if (!prefs.kickoff || favorites.length === 0) return 0;
+  if (prefs.muteAll || favorites.length === 0) return 0;
 
   const upcoming = matchesForTeams(favorites).filter(
     (m) => m.status === "upcoming" && new Date(m.kickoff).getTime() > Date.now(),
@@ -128,14 +231,18 @@ export async function syncKickoffAlerts(favorites: string[], prefs: AlertPrefs) 
 
   const toSchedule = upcoming
     .map((m) => {
-      const at = new Date(new Date(m.kickoff).getTime() - prefs.kickoffMinutesBefore * 60_000);
+      const effective = prefsForMatch(prefs, m);
+      if (!effective.kickoff) return null;
+      const at = new Date(
+        new Date(m.kickoff).getTime() - effective.kickoffMinutesBefore * 60_000,
+      );
       if (at.getTime() <= Date.now()) return null;
       return {
         id: notificationId(m.id),
         title: `${m.home.short} vs ${m.away.short} kicks off soon`,
-        body: `Starts in ${prefs.kickoffMinutesBefore} min · ${m.channels[0] ?? m.venue}`,
+        body: `Starts in ${effective.kickoffMinutesBefore} min · ${m.channels[0] ?? m.venue}`,
         schedule: { at },
-        extra: { matchId: m.id },
+        extra: { matchId: m.id, link: `footylive://match/${m.id}` },
       };
     })
     .filter(Boolean) as Parameters<typeof LocalNotifications.schedule>[0]["notifications"];
@@ -144,8 +251,13 @@ export async function syncKickoffAlerts(favorites: string[], prefs: AlertPrefs) 
   return toSchedule.length;
 }
 
+/* ------------------------------------------------------------------ */
+/* Immediate alerts, guarded by the shared dedupe/throttle ledger       */
+/* ------------------------------------------------------------------ */
+
 /** Fires an immediate alert (used for live goal / full-time events). */
 export async function notifyNow(title: string, body: string, matchId?: string) {
+  const link = matchId ? `footylive://match/${matchId}` : undefined;
   if (isNative()) {
     const { LocalNotifications } = await import("@capacitor/local-notifications");
     await LocalNotifications.schedule({
@@ -154,13 +266,51 @@ export async function notifyNow(title: string, body: string, matchId?: string) {
           id: Math.floor(Math.random() * 2_000_000),
           title,
           body,
-          extra: matchId ? { matchId } : undefined,
+          extra: matchId ? { matchId, link } : undefined,
         },
       ],
     });
     return;
   }
-  if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
-    new Notification(title, { body, icon: "/favicon.ico" });
+  if (
+    typeof window !== "undefined" &&
+    "Notification" in window &&
+    Notification.permission === "granted"
+  ) {
+    const n = new Notification(title, {
+      body,
+      icon: "/favicon.ico",
+      ...(matchId ? { tag: matchId } : {}),
+    });
+    if (matchId) {
+      n.onclick = () => {
+        window.focus();
+        window.location.assign(`/match/${matchId}`);
+      };
+    }
   }
+}
+
+/**
+ * Client-side gate applied before raising a local alert. Uses exactly the same
+ * rules as the server so a match event never fires twice even when both the
+ * in-app ticker and an FCM push observe it.
+ */
+export function allowAlert(event: PushEvent): boolean {
+  const ledger = loadLedger();
+  const decision = shouldDeliver(ledger, event);
+  if (decision.deliver) saveLedger(ledger);
+  return decision.deliver;
+}
+
+/** Only alert for a match if the resolved per-league/club prefs allow it. */
+export function alertEnabledFor(
+  prefs: AlertPrefs,
+  matchId: string,
+  kind: "goals" | "fullTime" | "kickoff",
+): boolean {
+  if (prefs.muteAll) return false;
+  const m = getMatch(matchId);
+  if (!m) return false;
+  return prefsForMatch(prefs, m)[kind] === true;
 }

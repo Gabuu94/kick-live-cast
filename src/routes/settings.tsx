@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Bell, ChevronDown, RotateCcw, Star, Trophy } from "lucide-react";
+import { Bell, ChevronDown, Info, RotateCcw, Star, Trophy } from "lucide-react";
 import { Page } from "@/components/app-chrome";
 import { Switch } from "@/components/ui/switch";
 import { useAlerts } from "@/lib/native/use-alerts";
@@ -16,6 +16,7 @@ import {
   type PartialScopePrefs,
   type ScopePrefs,
 } from "@/lib/push/prefs";
+import { APP_NAME, versionLabel } from "@/lib/app-info";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/settings")({

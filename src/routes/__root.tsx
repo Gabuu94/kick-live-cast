@@ -15,6 +15,7 @@ import { FavoritesProvider } from "../lib/favorites";
 import { TopBar, BottomNav } from "../components/app-chrome";
 import { AlertsProvider } from "../lib/native/use-alerts";
 import { useAdMob } from "../lib/native/use-ads";
+import { hideSplash } from "../lib/native/splash";
 
 function NotFoundComponent() {
   return (
@@ -106,6 +107,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/app-icon.png" },
+      { rel: "icon", sizes: "512x512", type: "image/png", href: "/app-icon.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
   }),
   shellComponent: RootShell,
@@ -144,6 +147,10 @@ function RootComponent() {
 
 function AppFrame() {
   useAdMob();
+
+  useEffect(() => {
+    void hideSplash();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">

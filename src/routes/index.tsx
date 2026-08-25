@@ -16,13 +16,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Live Football Scores Today — FootyLive" },
+      { title: "Live Football Scores Today — Football Live TV" },
       {
         name: "description",
         content:
           "Follow live football scores minute by minute, see today's kick-off times and which channel is showing each match.",
       },
-      { property: "og:title", content: "Live Football Scores Today — FootyLive" },
+      { property: "og:title", content: "Live Football Scores Today — Football Live TV" },
       {
         property: "og:description",
         content: "Live scores, minute-by-minute updates and TV listings for today's football.",

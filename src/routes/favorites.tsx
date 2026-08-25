@@ -9,13 +9,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/favorites")({
   head: () => ({
     meta: [
-      { title: "My Teams & Followed Matches — FootyLive" },
+      { title: "My Teams & Followed Matches — Football Live TV" },
       {
         name: "description",
         content:
           "Follow your favourite clubs and keep their live scores, fixtures and results in one place.",
       },
-      { property: "og:title", content: "My Teams & Followed Matches — FootyLive" },
+      { property: "og:title", content: "My Teams & Followed Matches — Football Live TV" },
       {
         property: "og:description",
         content: "Pick the clubs you follow and see only their matches.",

@@ -172,7 +172,7 @@ export function AlertsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const sendTestAlert = useCallback(async () => {
-    await notifyNow("FootyLive alerts are on", "You'll be pinged before your teams kick off.");
+    await notifyNow("Football Live TV alerts are on", "You'll be pinged before your teams kick off.");
   }, []);
 
   return (

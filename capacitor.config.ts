@@ -10,8 +10,8 @@ import type { CapacitorConfig } from "@capacitor/cli";
  *   `npx cap sync android && npx cap open android`.
  */
 const config: CapacitorConfig = {
-  appId: "app.footylive.scores",
-  appName: "FootyLive",
+  appId: "com.footballlivetv.app",
+  appName: "Football Live TV",
   webDir: "dist/client",
   android: {
     allowMixedContent: false,
@@ -19,7 +19,7 @@ const config: CapacitorConfig = {
   /**
    * Deep links.
    *
-   * Push payloads carry `data.link = footylive://match/<id>`; the app listens
+   * Push payloads carry `data.link = footballlivetv://match/<id>`; the app listens
    * for `appUrlOpen` and routes to the match screen. After `npx cap add
    * android`, add this to the MainActivity in AndroidManifest.xml:
    *
@@ -27,7 +27,7 @@ const config: CapacitorConfig = {
    *     <action android:name="android.intent.action.VIEW" />
    *     <category android:name="android.intent.category.DEFAULT" />
    *     <category android:name="android.intent.category.BROWSABLE" />
-   *     <data android:scheme="footylive" android:host="match" />
+   *     <data android:scheme="footballlivetv" android:host="match" />
    *   </intent-filter>
    *
    * and, for tapping an FCM notification:
@@ -42,7 +42,7 @@ const config: CapacitorConfig = {
       presentationOptions: ["badge", "sound", "alert"],
     },
     LocalNotifications: {
-      smallIcon: "ic_stat_footy",
+      smallIcon: "ic_stat_football",
       iconColor: "#4ADE80",
     },
   },

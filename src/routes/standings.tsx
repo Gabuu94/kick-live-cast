@@ -9,13 +9,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/standings")({
   head: () => ({
     meta: [
-      { title: "League Tables & Standings — FootyLive" },
+      { title: "League Tables & Standings — Football Live TV" },
       {
         name: "description",
         content:
           "Up-to-date league tables for the Premier League, LaLiga, Serie A, Bundesliga, Ligue 1 and Champions League.",
       },
-      { property: "og:title", content: "League Tables & Standings — FootyLive" },
+      { property: "og:title", content: "League Tables & Standings — Football Live TV" },
       {
         property: "og:description",
         content: "Points, goal difference and recent form for Europe's top leagues.",

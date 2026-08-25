@@ -60,8 +60,8 @@ export async function requestPermission(): Promise<PermissionState> {
 /* Device identity + backend registration                              */
 /* ------------------------------------------------------------------ */
 
-const DEVICE_KEY = "footylive:device-id";
-const TOKEN_KEY = "footylive:push-token";
+const DEVICE_KEY = "footballlivetv:device-id";
+const TOKEN_KEY = "footballlivetv:push-token";
 
 export function deviceId(): string {
   if (typeof window === "undefined") return "ssr-placeholder-device";
@@ -134,7 +134,7 @@ export function matchIdFromPayload(payload: unknown): string | null {
   return null;
 }
 
-/** footylive://match/m-101 or https://footylive.app/match/m-101 */
+/** footballlivetv://match/m-101 or https://footballlivetv.app/match/m-101 */
 export function matchIdFromUrl(url: string): string | null {
   const m = /(?:^|\/)match\/([A-Za-z0-9_-]+)/.exec(url);
   return m?.[1] ?? null;
@@ -142,7 +142,7 @@ export function matchIdFromUrl(url: string): string | null {
 
 export interface PushListenerOptions {
   onToken?: (token: string) => void;
-  /** Called when the user taps an alert or opens a footylive:// deep link. */
+  /** Called when the user taps an alert or opens a footballlivetv:// deep link. */
   onOpenMatch?: (matchId: string) => void;
 }
 
@@ -242,7 +242,7 @@ export async function syncKickoffAlerts(favorites: string[], prefs: AlertPrefs) 
         title: `${m.home.short} vs ${m.away.short} kicks off soon`,
         body: `Starts in ${effective.kickoffMinutesBefore} min · ${m.channels[0] ?? m.venue}`,
         schedule: { at },
-        extra: { matchId: m.id, link: `footylive://match/${m.id}` },
+        extra: { matchId: m.id, link: `footballlivetv://match/${m.id}` },
       };
     })
     .filter(Boolean) as Parameters<typeof LocalNotifications.schedule>[0]["notifications"];
@@ -257,7 +257,7 @@ export async function syncKickoffAlerts(favorites: string[], prefs: AlertPrefs) 
 
 /** Fires an immediate alert (used for live goal / full-time events). */
 export async function notifyNow(title: string, body: string, matchId?: string) {
-  const link = matchId ? `footylive://match/${matchId}` : undefined;
+  const link = matchId ? `footballlivetv://match/${matchId}` : undefined;
   if (isNative()) {
     const { LocalNotifications } = await import("@capacitor/local-notifications");
     await LocalNotifications.schedule({

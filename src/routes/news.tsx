@@ -7,13 +7,13 @@ import { news } from "@/lib/football-data";
 export const Route = createFileRoute("/news")({
   head: () => ({
     meta: [
-      { title: "Football News & Match Reports — FootyLive" },
+      { title: "Football News & Match Reports — Football Live TV" },
       {
         name: "description",
         content:
           "Breaking football news, match reports and previews from the Premier League, LaLiga, Serie A and Champions League.",
       },
-      { property: "og:title", content: "Football News & Match Reports — FootyLive" },
+      { property: "og:title", content: "Football News & Match Reports — Football Live TV" },
       {
         property: "og:description",
         content: "The latest football headlines, reports and previews updated through the day.",

@@ -140,7 +140,7 @@ export function hasOverride(prefs: AlertPrefs, scope: ScopeKey): boolean {
 /* Persistence (browser)                                               */
 /* ------------------------------------------------------------------ */
 
-export const PREFS_KEY = "footylive:alerts";
+export const PREFS_KEY = "footballlivetv:alerts";
 
 export function loadPrefs(): AlertPrefs {
   if (typeof window === "undefined") return DEFAULT_PREFS;

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Star, Tv } from "lucide-react";
 import { getLeague, formatKickoff, formatDay, type Match } from "@/lib/football-data";
 import { useFavorites } from "@/lib/favorites";
+import { OddsStrip } from "@/components/odds-panel";
 import { cn } from "@/lib/utils";
 
 export function TeamCrest({ crest, size = "md" }: { crest: string; size?: "sm" | "md" }) {

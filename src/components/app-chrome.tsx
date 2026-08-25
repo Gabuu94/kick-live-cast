@@ -19,7 +19,8 @@ export function TopBar() {
             <Tv className="h-5 w-5" strokeWidth={2.5} />
           </span>
           <span className="font-display text-xl font-bold uppercase tracking-wide">
-            Football<span className="text-primary">Live TV</span>
+            Football{" "}
+            <span className="text-primary">Live TV</span>
           </span>
         </Link>
         <div className="ml-auto flex items-center gap-2">

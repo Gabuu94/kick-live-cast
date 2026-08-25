@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Bell, ChevronDown, RotateCcw, Star, Trophy } from "lucide-react";
+import { Bell, ChevronDown, Info, RotateCcw, Star, Trophy } from "lucide-react";
 import { Page } from "@/components/app-chrome";
 import { Switch } from "@/components/ui/switch";
 import { useAlerts } from "@/lib/native/use-alerts";
@@ -16,6 +16,7 @@ import {
   type PartialScopePrefs,
   type ScopePrefs,
 } from "@/lib/push/prefs";
+import { APP_NAME, versionLabel } from "@/lib/app-info";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/settings")({
@@ -133,6 +134,19 @@ function SettingsPage() {
           </div>
         )}
       </section>
+
+      <Link
+        to="/about"
+        className="flex items-center gap-3 rounded-2xl bg-card p-4 ring-1 ring-border"
+      >
+        <Info className="h-5 w-5 shrink-0 text-primary" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium">About {APP_NAME}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {versionLabel()} · Privacy Policy · Terms
+          </p>
+        </div>
+      </Link>
     </Page>
   );
 }

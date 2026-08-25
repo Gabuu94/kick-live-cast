@@ -10,18 +10,26 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as FixturesRouteImport } from './routes/fixtures'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StandingsRouteImport } from './routes/standings'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as MatchMatchIdRouteImport } from './routes/match.$matchId'
 import { Route as ApiPublicPushEventsRouteImport } from './routes/api.public.push.events'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AlertsRoute = AlertsRouteImport.update({
@@ -44,6 +52,11 @@ const NewsRoute = NewsRouteImport.update({
   path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -52,6 +65,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const StandingsRoute = StandingsRouteImport.update({
   id: '/standings',
   path: '/standings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MatchMatchIdRoute = MatchMatchIdRouteImport.update({
@@ -67,35 +85,44 @@ const ApiPublicPushEventsRoute = ApiPublicPushEventsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/alerts': typeof AlertsRoute
   '/favorites': typeof FavoritesRoute
   '/fixtures': typeof FixturesRoute
   '/news': typeof NewsRoute
+  '/privacy': typeof PrivacyRoute
   '/settings': typeof SettingsRoute
   '/standings': typeof StandingsRoute
+  '/terms': typeof TermsRoute
   '/match/$matchId': typeof MatchMatchIdRoute
   '/api/public/push/events': typeof ApiPublicPushEventsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/alerts': typeof AlertsRoute
   '/favorites': typeof FavoritesRoute
   '/fixtures': typeof FixturesRoute
   '/news': typeof NewsRoute
+  '/privacy': typeof PrivacyRoute
   '/settings': typeof SettingsRoute
   '/standings': typeof StandingsRoute
+  '/terms': typeof TermsRoute
   '/match/$matchId': typeof MatchMatchIdRoute
   '/api/public/push/events': typeof ApiPublicPushEventsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/alerts': typeof AlertsRoute
   '/favorites': typeof FavoritesRoute
   '/fixtures': typeof FixturesRoute
   '/news': typeof NewsRoute
+  '/privacy': typeof PrivacyRoute
   '/settings': typeof SettingsRoute
   '/standings': typeof StandingsRoute
+  '/terms': typeof TermsRoute
   '/match/$matchId': typeof MatchMatchIdRoute
   '/api/public/push/events': typeof ApiPublicPushEventsRoute
 }
@@ -103,46 +130,58 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/alerts'
     | '/favorites'
     | '/fixtures'
     | '/news'
+    | '/privacy'
     | '/settings'
     | '/standings'
+    | '/terms'
     | '/match/$matchId'
     | '/api/public/push/events'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/alerts'
     | '/favorites'
     | '/fixtures'
     | '/news'
+    | '/privacy'
     | '/settings'
     | '/standings'
+    | '/terms'
     | '/match/$matchId'
     | '/api/public/push/events'
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/alerts'
     | '/favorites'
     | '/fixtures'
     | '/news'
+    | '/privacy'
     | '/settings'
     | '/standings'
+    | '/terms'
     | '/match/$matchId'
     | '/api/public/push/events'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AlertsRoute: typeof AlertsRoute
   FavoritesRoute: typeof FavoritesRoute
   FixturesRoute: typeof FixturesRoute
   NewsRoute: typeof NewsRoute
+  PrivacyRoute: typeof PrivacyRoute
   SettingsRoute: typeof SettingsRoute
   StandingsRoute: typeof StandingsRoute
+  TermsRoute: typeof TermsRoute
   MatchMatchIdRoute: typeof MatchMatchIdRoute
   ApiPublicPushEventsRoute: typeof ApiPublicPushEventsRoute
 }
@@ -154,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/alerts': {
@@ -184,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -196,6 +249,13 @@ declare module '@tanstack/react-router' {
       path: '/standings'
       fullPath: '/standings'
       preLoaderRoute: typeof StandingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/match/$matchId': {
@@ -217,12 +277,15 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AlertsRoute: AlertsRoute,
   FavoritesRoute: FavoritesRoute,
   FixturesRoute: FixturesRoute,
   NewsRoute: NewsRoute,
+  PrivacyRoute: PrivacyRoute,
   SettingsRoute: SettingsRoute,
   StandingsRoute: StandingsRoute,
+  TermsRoute: TermsRoute,
   MatchMatchIdRoute: MatchMatchIdRoute,
   ApiPublicPushEventsRoute: ApiPublicPushEventsRoute,
 }

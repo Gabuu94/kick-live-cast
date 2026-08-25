@@ -1,0 +1,23 @@
+{
+  "name": "Football Live TV",
+  "short_name": "Football Live TV",
+  "description": "Live football scores, TV channel listings, fixtures, tables and news.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1a14",
+  "theme_color": "#0b1a14",
+  "icons": [
+    {
+      "src": "/app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

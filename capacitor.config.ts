@@ -45,6 +45,30 @@ const config: CapacitorConfig = {
       smallIcon: "ic_stat_football",
       iconColor: "#4ADE80",
     },
+    /**
+     * Branded splash.
+     *
+     * Sources live in `public/`:
+     *   - public/splash-dark.png   -> resources/splash-dark.png
+     *   - public/splash-light.png  -> resources/splash.png
+     *   - public/app-icon.png      -> resources/icon.png (launcher + adaptive)
+     *
+     * Generate every density (incl. Android 12+ splash and adaptive icons):
+     *   npx @capacitor/assets generate --android \
+     *     --iconBackgroundColor '#0b1a14' --iconBackgroundColorDark '#0b1a14' \
+     *     --splashBackgroundColor '#0b1a14' --splashBackgroundColorDark '#0b1a14'
+     * then `npx cap sync android`.
+     */
+    SplashScreen: {
+      launchAutoHide: false,
+      launchShowDuration: 0,
+      backgroundColor: "#0b1a14",
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER_CROP",
+      showSpinner: false,
+      splashFullScreen: true,
+      splashImmersive: false,
+    },
   },
 };
 

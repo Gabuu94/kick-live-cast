@@ -15,11 +15,11 @@ export function TopBar() {
     <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-2xl items-center gap-2 px-4">
         <Link to="/" className="flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-primary text-base shadow-glow">
-            ⚽
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-primary text-primary-foreground shadow-glow">
+            <Tv className="h-5 w-5" strokeWidth={2.5} />
           </span>
           <span className="font-display text-xl font-bold uppercase tracking-wide">
-            Footy<span className="text-primary">Live</span>
+            Football<span className="text-primary">Live TV</span>
           </span>
         </Link>
         <div className="ml-auto flex items-center gap-2">

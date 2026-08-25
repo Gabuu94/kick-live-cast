@@ -75,8 +75,8 @@ export function MatchCard({ match }: { match: Match }) {
 
       <div className="mt-2 flex items-center gap-3">
         <div className="min-w-0 flex-1 space-y-2">
-          <Row team={match.home.name} crest={match.home.crest} score={match.homeScore} />
-          <Row team={match.away.name} crest={match.away.crest} score={match.awayScore} />
+          <Row team={match.home} score={match.homeScore} />
+          <Row team={match.away} score={match.awayScore} />
         </div>
 
         <div className="w-20 shrink-0 border-l border-border pl-3 text-center">
@@ -113,19 +113,11 @@ export function MatchCard({ match }: { match: Match }) {
   );
 }
 
-function Row({
-  team,
-  crest,
-  score,
-}: {
-  team: string;
-  crest: string;
-  score: number | null;
-}) {
+function Row({ team, score }: { team: Team; score: number | null }) {
   return (
     <div className="flex items-center gap-2">
-      <TeamCrest crest={crest} size="sm" />
-      <span className="min-w-0 flex-1 truncate text-sm font-medium">{team}</span>
+      <TeamCrest team={team} size="sm" />
+      <span className="min-w-0 flex-1 truncate text-sm font-medium">{team.name}</span>
       <span className="font-display text-base font-bold tabular-nums">
         {score ?? "-"}
       </span>

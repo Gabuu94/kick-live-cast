@@ -70,7 +70,7 @@ function StandingsPage() {
               {r.pos}
             </span>
             <span className="flex min-w-0 items-center gap-2">
-              <TeamCrest crest={r.team.crest} size="sm" />
+              <TeamCrest team={r.team} size="sm" />
               <span className="truncate text-sm font-medium">{r.team.name}</span>
             </span>
             <span className="text-center text-xs tabular-nums text-muted-foreground">

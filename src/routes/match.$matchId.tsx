@@ -62,7 +62,7 @@ function MatchPage() {
 
         <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           <div className="flex flex-col items-center gap-2 text-center">
-            <TeamCrest crest={match.home.crest} />
+            <TeamCrest team={match.home} />
             <span className="text-sm font-semibold leading-tight">{match.home.name}</span>
           </div>
           <div className="text-center">
@@ -89,7 +89,7 @@ function MatchPage() {
             )}
           </div>
           <div className="flex flex-col items-center gap-2 text-center">
-            <TeamCrest crest={match.away.crest} />
+            <TeamCrest team={match.away} />
             <span className="text-sm font-semibold leading-tight">{match.away.name}</span>
           </div>
         </div>

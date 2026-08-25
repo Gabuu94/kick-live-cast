@@ -46,7 +46,7 @@ function FavoritesPage() {
                 active ? "bg-primary/10 ring-primary" : "bg-card ring-border",
               )}
             >
-              <TeamCrest crest={team.crest} size="sm" />
+              <TeamCrest team={team} size="sm" />
               <span className="min-w-0 flex-1 truncate text-xs font-medium">{team.name}</span>
               <Star
                 className={cn(

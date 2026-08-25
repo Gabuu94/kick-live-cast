@@ -92,7 +92,14 @@ function LivePage() {
             No matches for this filter.
           </p>
         ) : (
-          list.map((m) => <MatchCard key={m.id} match={m} />)
+          list.map((m, i) => (
+            <div key={m.id} className="space-y-3">
+              <MatchCard match={m} />
+              {i > 0 && (i + 1) % 5 === 0 && i !== list.length - 1 && (
+                <AdSlot label="Ad space — in-feed banner" />
+              )}
+            </div>
+          ))
         )}
       </div>
 

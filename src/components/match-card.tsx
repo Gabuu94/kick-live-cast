@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Star, Tv } from "lucide-react";
 import { getLeague, formatKickoff, formatDay, type Match } from "@/lib/football-data";
 import { useFavorites } from "@/lib/favorites";
+import { OddsStrip } from "@/components/odds-panel";
 import { cn } from "@/lib/utils";
 
 export function TeamCrest({ crest, size = "md" }: { crest: string; size?: "sm" | "md" }) {
@@ -71,6 +72,12 @@ export function MatchCard({ match }: { match: Match }) {
           )}
         </div>
       </div>
+
+      {match.status !== "finished" && (
+        <div className="mt-3">
+          <OddsStrip match={match} />
+        </div>
+      )}
 
       {match.channels.length > 0 && (
         <div className="mt-3 flex items-center gap-1.5 border-t border-border pt-2 text-[11px] text-muted-foreground">

@@ -85,3 +85,40 @@ export async function maybeShowInterstitial(everyNthView = 3): Promise<void> {
     console.warn("Interstitial failed", err);
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Rewarded ads — used to unlock the HD stream / remove ads for a while */
+/* ------------------------------------------------------------------ */
+
+export const REWARDED_UNIT =
+  import.meta.env["VITE_ADMOB_REWARDED_ID"] ?? "ca-app-pub-3940256099942544/5224354917";
+
+let rewardedReady = false;
+
+export async function prepareRewarded(): Promise<void> {
+  if (!isNative() || rewardedReady) return;
+  await initAds();
+  const { AdMob } = await admob();
+  await AdMob.prepareRewardVideoAd({ adId: REWARDED_UNIT, isTesting: TESTING });
+  rewardedReady = true;
+}
+
+/**
+ * Shows a rewarded video. Resolves true when the user earned the reward.
+ * On the web build it resolves true immediately so the flow stays testable.
+ */
+export async function showRewarded(): Promise<boolean> {
+  if (!isNative()) return true;
+  try {
+    await prepareRewarded();
+    const { AdMob } = await admob();
+    const reward = await AdMob.showRewardVideoAd();
+    rewardedReady = false;
+    void prepareRewarded();
+    return Boolean(reward);
+  } catch (err) {
+    console.warn("Rewarded ad failed", err);
+    rewardedReady = false;
+    return false;
+  }
+}

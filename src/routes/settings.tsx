@@ -133,6 +133,19 @@ function SettingsPage() {
           </div>
         )}
       </section>
+
+      <Link
+        to="/about"
+        className="flex items-center gap-3 rounded-2xl bg-card p-4 ring-1 ring-border"
+      >
+        <Info className="h-5 w-5 shrink-0 text-primary" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium">About {APP_NAME}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {versionLabel()} · Privacy Policy · Terms
+          </p>
+        </div>
+      </Link>
     </Page>
   );
 }

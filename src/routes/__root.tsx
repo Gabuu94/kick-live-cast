@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { FavoritesProvider } from "../lib/favorites";
 import { TopBar, BottomNav } from "../components/app-chrome";
+import { AlertsProvider } from "../lib/native/use-alerts";
+import { useAdMob } from "../lib/native/use-ads";
 
 function NotFoundComponent() {
   return (
@@ -131,13 +133,23 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <FavoritesProvider>
-        <div className="min-h-screen bg-background">
-          <TopBar />
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
-          <BottomNav />
-        </div>
+        <AlertsProvider>
+          <AppFrame />
+        </AlertsProvider>
       </FavoritesProvider>
     </QueryClientProvider>
+  );
+}
+
+function AppFrame() {
+  useAdMob();
+
+  return (
+    <div className="min-h-screen bg-background">
+      <TopBar />
+      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <Outlet />
+      <BottomNav />
+    </div>
   );
 }

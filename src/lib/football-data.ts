@@ -97,7 +97,10 @@ export const leagues: League[] = [
 const iso = (hoursFromNow: number) =>
   new Date(Date.now() + hoursFromNow * 3600_000).toISOString();
 
-const stats = (h: number[], a: number[]) => [
+const stats = (
+  h: [number, number, number, number, number],
+  a: [number, number, number, number, number],
+) => [
   { label: "Possession %", home: h[0], away: a[0] },
   { label: "Shots", home: h[1], away: a[1] },
   { label: "On target", home: h[2], away: a[2] },

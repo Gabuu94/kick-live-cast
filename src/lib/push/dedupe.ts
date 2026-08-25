@@ -118,7 +118,7 @@ function prune(ledger: LedgerEntry, now: number, config: ThrottleConfig) {
 /* Browser-backed ledger (survives reloads / app restarts)             */
 /* ------------------------------------------------------------------ */
 
-const STORAGE_KEY = "footylive:push-ledger";
+const STORAGE_KEY = "footballlivetv:push-ledger";
 
 export function loadLedger(): LedgerEntry {
   if (typeof window === "undefined") return createLedger();

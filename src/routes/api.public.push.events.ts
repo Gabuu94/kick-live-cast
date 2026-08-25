@@ -112,7 +112,7 @@ export const Route = createFileRoute("/api/public/push/events")({
         // One collapse key per match+type: an undelivered goal alert is replaced
         // by the newer one instead of stacking on the lock screen.
         const collapseKey = `${parsed.matchId}-${parsed.type}`;
-        const link = `footylive://match/${parsed.matchId}`;
+        const link = `footballlivetv://match/${parsed.matchId}`;
 
         const results = await sendPushBatch(
           recipients.map(({ device }) => ({

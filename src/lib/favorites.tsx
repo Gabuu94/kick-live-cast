@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 
-const KEY = "footylive:favorites";
+const KEY = "footballlivetv:favorites";
 
 interface FavoritesValue {
   favorites: string[];

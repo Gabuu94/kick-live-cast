@@ -7,13 +7,13 @@ import { formatDay, matches } from "@/lib/football-data";
 export const Route = createFileRoute("/fixtures")({
   head: () => ({
     meta: [
-      { title: "Football Fixtures & Kick-off Times — FootyLive" },
+      { title: "Football Fixtures & Kick-off Times — Football Live TV" },
       {
         name: "description",
         content:
           "Every upcoming football fixture by day, with kick-off times, venues and broadcast channels.",
       },
-      { property: "og:title", content: "Football Fixtures & Kick-off Times — FootyLive" },
+      { property: "og:title", content: "Football Fixtures & Kick-off Times — Football Live TV" },
       {
         property: "og:description",
         content: "Browse upcoming football fixtures grouped by day with TV channel listings.",

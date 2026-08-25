@@ -101,7 +101,7 @@ export interface FcmMessage {
   token: string;
   title: string;
   body: string;
-  /** Deep link opened when the alert is tapped, e.g. footylive://match/m-101 */
+  /** Deep link opened when the alert is tapped, e.g. footballlivetv://match/m-101 */
   link: string;
   /** Collapse key — FCM replaces an undelivered alert with the same key. */
   collapseKey: string;

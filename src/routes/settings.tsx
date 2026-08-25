@@ -21,13 +21,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Notification Settings — FootyLive" },
+      { title: "Notification Settings — Football Live TV" },
       {
         name: "description",
         content:
           "Fine-tune goal alerts, full-time results and kick-off reminder lead times for every league and club you follow.",
       },
-      { property: "og:title", content: "Notification Settings — FootyLive" },
+      { property: "og:title", content: "Notification Settings — Football Live TV" },
       {
         property: "og:description",
         content: "Per-league and per-club control over goal, full-time and kick-off alerts.",

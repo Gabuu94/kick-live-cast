@@ -11,13 +11,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/alerts")({
   head: () => ({
     meta: [
-      { title: "Match Alerts & Notifications — FootyLive" },
+      { title: "Match Alerts & Notifications — Football Live TV" },
       {
         name: "description",
         content:
           "Turn on kick-off reminders, goal alerts and full-time notifications for the clubs you follow.",
       },
-      { property: "og:title", content: "Match Alerts & Notifications — FootyLive" },
+      { property: "og:title", content: "Match Alerts & Notifications — Football Live TV" },
       {
         property: "og:description",
         content: "Choose which football notifications you get and how early you're reminded.",
@@ -66,7 +66,7 @@ function AlertsPage() {
               {granted
                 ? "You'll be alerted before kick-off and when your teams score."
                 : permission === "denied"
-                  ? "Allow notifications for FootyLive in your device settings, then come back."
+                  ? "Allow notifications for Football Live TV in your device settings, then come back."
                   : "Allow notifications so we can ping you about kick-offs and goals."}
             </p>
             {!granted && permission !== "unsupported" && (

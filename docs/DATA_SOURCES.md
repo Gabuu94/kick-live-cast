@@ -1,4 +1,4 @@
-# Where to get real data for FootyLive
+# Where to get real data for Football Live TV
 
 The app currently runs on demo data in `src/lib/football-data.ts` and derived
 odds in `src/lib/odds.ts`. Swap those two modules for live feeds and the whole

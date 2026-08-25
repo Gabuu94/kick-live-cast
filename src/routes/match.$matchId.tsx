@@ -17,7 +17,7 @@ export const Route = createFileRoute("/match/$matchId")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Match unavailable — FootyLive" }, { name: "robots", content: "noindex" }],
+        meta: [{ title: "Match unavailable — Football Live TV" }, { name: "robots", content: "noindex" }],
       };
     }
     const { match } = loaderData;

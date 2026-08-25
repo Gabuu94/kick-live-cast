@@ -57,6 +57,17 @@ export interface ScopeTarget {
  * When both clubs in a match have overrides the *most permissive* wins, so a
  * user following both sides of a derby still gets the alert.
  */
+/** Overlay a partial layer, ignoring keys that are absent/undefined. */
+function merge(base: ScopePrefs, layer: PartialScopePrefs | undefined): ScopePrefs {
+  if (!layer) return { ...base };
+  return {
+    kickoff: layer.kickoff ?? base.kickoff,
+    kickoffMinutesBefore: layer.kickoffMinutesBefore ?? base.kickoffMinutesBefore,
+    goals: layer.goals ?? base.goals,
+    fullTime: layer.fullTime ?? base.fullTime,
+  };
+}
+
 export function resolvePrefs(prefs: AlertPrefs, target: ScopeTarget): ScopePrefs {
   const base: ScopePrefs = {
     kickoff: prefs.kickoff,

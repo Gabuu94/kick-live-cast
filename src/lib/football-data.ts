@@ -4,7 +4,8 @@ export interface Team {
   id: string;
   name: string;
   short: string;
-  crest: string; // emoji/initial styling handled in UI
+  crest: string; // emoji fallback
+  domain: string; // used for real logo lookup (Logo.dev)
 }
 
 export interface League {
@@ -59,30 +60,37 @@ export interface NewsItem {
   tag: string;
 }
 
-const t = (id: string, name: string, short: string, crest: string): Team => ({
+const t = (
+  id: string,
+  name: string,
+  short: string,
+  crest: string,
+  domain: string,
+): Team => ({
   id,
   name,
   short,
   crest,
+  domain,
 });
 
 export const teams = {
-  ars: t("ars", "Arsenal", "ARS", "🔴"),
-  che: t("che", "Chelsea", "CHE", "🔵"),
-  liv: t("liv", "Liverpool", "LIV", "🔴"),
-  mci: t("mci", "Manchester City", "MCI", "🩵"),
-  mun: t("mun", "Manchester United", "MUN", "🔴"),
-  tot: t("tot", "Tottenham", "TOT", "⚪"),
-  rma: t("rma", "Real Madrid", "RMA", "⚪"),
-  bar: t("bar", "Barcelona", "BAR", "🔵"),
-  atm: t("atm", "Atlético Madrid", "ATM", "🔴"),
-  bay: t("bay", "Bayern München", "BAY", "🔴"),
-  bvb: t("bvb", "Borussia Dortmund", "BVB", "🟡"),
-  int: t("int", "Inter", "INT", "🔵"),
-  mil: t("mil", "AC Milan", "MIL", "🔴"),
-  juv: t("juv", "Juventus", "JUV", "⚫"),
-  psg: t("psg", "Paris SG", "PSG", "🔵"),
-  mar: t("mar", "Marseille", "MAR", "🔷"),
+  ars: t("ars", "Arsenal", "ARS", "🔴", "arsenal.com"),
+  che: t("che", "Chelsea", "CHE", "🔵", "chelseafc.com"),
+  liv: t("liv", "Liverpool", "LIV", "🔴", "liverpoolfc.com"),
+  mci: t("mci", "Manchester City", "MCI", "🩵", "mancity.com"),
+  mun: t("mun", "Manchester United", "MUN", "🔴", "manutd.com"),
+  tot: t("tot", "Tottenham", "TOT", "⚪", "tottenhamhotspur.com"),
+  rma: t("rma", "Real Madrid", "RMA", "⚪", "realmadrid.com"),
+  bar: t("bar", "Barcelona", "BAR", "🔵", "fcbarcelona.com"),
+  atm: t("atm", "Atlético Madrid", "ATM", "🔴", "atleticodemadrid.com"),
+  bay: t("bay", "Bayern München", "BAY", "🔴", "fcbayern.com"),
+  bvb: t("bvb", "Borussia Dortmund", "BVB", "🟡", "bvb.de"),
+  int: t("int", "Inter", "INT", "🔵", "inter.it"),
+  mil: t("mil", "AC Milan", "MIL", "🔴", "acmilan.com"),
+  juv: t("juv", "Juventus", "JUV", "⚫", "juventus.com"),
+  psg: t("psg", "Paris SG", "PSG", "🔵", "psg.fr"),
+  mar: t("mar", "Marseille", "MAR", "🔷", "om.fr"),
 };
 
 export const leagues: League[] = [

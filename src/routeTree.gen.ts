@@ -14,6 +14,7 @@ import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as FixturesRouteImport } from './routes/fixtures'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as StandingsRouteImport } from './routes/standings'
+import { Route as MatchMatchIdRouteImport } from './routes/match.$matchId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const StandingsRoute = StandingsRouteImport.update({
   path: '/standings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MatchMatchIdRoute = MatchMatchIdRouteImport.update({
+  id: '/match/$matchId',
+  path: '/match/$matchId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/fixtures': typeof FixturesRoute
   '/news': typeof NewsRoute
   '/standings': typeof StandingsRoute
+  '/match/$matchId': typeof MatchMatchIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/fixtures': typeof FixturesRoute
   '/news': typeof NewsRoute
   '/standings': typeof StandingsRoute
+  '/match/$matchId': typeof MatchMatchIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,33 @@ export interface FileRoutesById {
   '/fixtures': typeof FixturesRoute
   '/news': typeof NewsRoute
   '/standings': typeof StandingsRoute
+  '/match/$matchId': typeof MatchMatchIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/favorites' | '/fixtures' | '/news' | '/standings'
+  fullPaths:
+    | '/'
+    | '/favorites'
+    | '/fixtures'
+    | '/news'
+    | '/standings'
+    | '/match/$matchId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/favorites' | '/fixtures' | '/news' | '/standings'
-  id: '__root__' | '/' | '/favorites' | '/fixtures' | '/news' | '/standings'
+  to:
+    | '/'
+    | '/favorites'
+    | '/fixtures'
+    | '/news'
+    | '/standings'
+    | '/match/$matchId'
+  id:
+    | '__root__'
+    | '/'
+    | '/favorites'
+    | '/fixtures'
+    | '/news'
+    | '/standings'
+    | '/match/$matchId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +105,7 @@ export interface RootRouteChildren {
   FixturesRoute: typeof FixturesRoute
   NewsRoute: typeof NewsRoute
   StandingsRoute: typeof StandingsRoute
+  MatchMatchIdRoute: typeof MatchMatchIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StandingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/match/$matchId': {
+      id: '/match/$matchId'
+      path: '/match/$matchId'
+      fullPath: '/match/$matchId'
+      preLoaderRoute: typeof MatchMatchIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   FixturesRoute: FixturesRoute,
   NewsRoute: NewsRoute,
   StandingsRoute: StandingsRoute,
+  MatchMatchIdRoute: MatchMatchIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

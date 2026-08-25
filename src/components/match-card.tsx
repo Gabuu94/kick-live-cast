@@ -72,6 +72,12 @@ export function MatchCard({ match }: { match: Match }) {
         </div>
       </div>
 
+      {match.status !== "finished" && (
+        <div className="mt-3">
+          <OddsStrip match={match} />
+        </div>
+      )}
+
       {match.channels.length > 0 && (
         <div className="mt-3 flex items-center gap-1.5 border-t border-border pt-2 text-[11px] text-muted-foreground">
           <Tv className="h-3.5 w-3.5 text-primary" />

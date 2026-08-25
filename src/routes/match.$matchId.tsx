@@ -1,7 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, MapPin, Play, Tv } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Loader2, MapPin, Play, Tv } from "lucide-react";
 import { TeamCrest } from "@/components/match-card";
 import { AdSlot } from "@/components/ad-slot";
+import { MatchInfoPanel, OddsPanel } from "@/components/odds-panel";
+import { showRewarded } from "@/lib/native/ads";
 import { getLeague, getMatch, formatDay, formatKickoff } from "@/lib/football-data";
 import { cn } from "@/lib/utils";
 

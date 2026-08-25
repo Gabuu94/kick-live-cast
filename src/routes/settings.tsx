@@ -126,7 +126,7 @@ function SettingsPage() {
               <OverrideCard
                 key={t.id}
                 scope={teamScope(t.id)}
-                label={`${t.crest} ${t.name}`}
+                label={t.name}
                 sublabel={t.short}
               />
             ))}

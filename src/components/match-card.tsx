@@ -1,23 +1,47 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Star, Tv } from "lucide-react";
-import { getLeague, formatKickoff, formatDay, type Match } from "@/lib/football-data";
+import { getLeague, formatKickoff, formatDay, type Match, type Team } from "@/lib/football-data";
 import { useFavorites } from "@/lib/favorites";
 import { OddsStrip } from "@/components/odds-panel";
 import { cn } from "@/lib/utils";
 
-export function TeamCrest({ crest, size = "md" }: { crest: string; size?: "sm" | "md" }) {
+const LOGO_TOKEN = import.meta.env["VITE_LOVABLE_CONNECTOR_LOGO_DEV_API_KEY"] as
+  | string
+  | undefined;
+
+export function logoUrl(domain: string, size = 96) {
+  if (!LOGO_TOKEN || !domain) return null;
+  return `https://img.logo.dev/${domain}?token=${LOGO_TOKEN}&size=${size}&format=png&retina=true`;
+}
+
+export function TeamCrest({ team, size = "md" }: { team: Team; size?: "sm" | "md" }) {
+  const [failed, setFailed] = useState(false);
+  const px = size === "md" ? 96 : 64;
+  const src = failed ? null : logoUrl(team.domain, px);
+
   return (
     <span
       className={cn(
-        "grid place-items-center rounded-full bg-surface-2 ring-1 ring-border",
+        "grid shrink-0 place-items-center overflow-hidden rounded-full bg-surface-2 ring-1 ring-border",
         size === "md" ? "h-9 w-9 text-lg" : "h-7 w-7 text-sm",
       )}
-      aria-hidden
     >
-      {crest}
+      {src ? (
+        <img
+          src={src}
+          alt={`${team.name} logo`}
+          loading="lazy"
+          className="h-full w-full object-contain p-0.5"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <span aria-hidden>{team.crest}</span>
+      )}
     </span>
   );
 }
+
 
 export function MatchCard({ match }: { match: Match }) {
   const league = getLeague(match.leagueId);
@@ -51,8 +75,8 @@ export function MatchCard({ match }: { match: Match }) {
 
       <div className="mt-2 flex items-center gap-3">
         <div className="min-w-0 flex-1 space-y-2">
-          <Row team={match.home.name} crest={match.home.crest} score={match.homeScore} />
-          <Row team={match.away.name} crest={match.away.crest} score={match.awayScore} />
+          <Row team={match.home} score={match.homeScore} />
+          <Row team={match.away} score={match.awayScore} />
         </div>
 
         <div className="w-20 shrink-0 border-l border-border pl-3 text-center">
@@ -89,19 +113,11 @@ export function MatchCard({ match }: { match: Match }) {
   );
 }
 
-function Row({
-  team,
-  crest,
-  score,
-}: {
-  team: string;
-  crest: string;
-  score: number | null;
-}) {
+function Row({ team, score }: { team: Team; score: number | null }) {
   return (
     <div className="flex items-center gap-2">
-      <TeamCrest crest={crest} size="sm" />
-      <span className="min-w-0 flex-1 truncate text-sm font-medium">{team}</span>
+      <TeamCrest team={team} size="sm" />
+      <span className="min-w-0 flex-1 truncate text-sm font-medium">{team.name}</span>
       <span className="font-display text-base font-bold tabular-nums">
         {score ?? "-"}
       </span>

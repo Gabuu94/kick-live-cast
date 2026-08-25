@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, CalendarDays, Home, Newspaper, Settings, Star, Trophy } from "lucide-react";
+import { Bell, CalendarDays, Home, Newspaper, Settings, Star, Trophy, Tv } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [

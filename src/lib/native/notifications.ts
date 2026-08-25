@@ -94,8 +94,6 @@ export async function registerPushListeners(onToken?: (token: string) => void) {
 /* Kick-off reminders (scheduled on-device, no server required)        */
 /* ------------------------------------------------------------------ */
 
-const idFor = (matchId: string) =>
-  Math.abs([...matchId].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)) % 2147483ofFix;
 
 // keep ids inside the 32-bit range Android requires
 function notificationId(matchId: string) {

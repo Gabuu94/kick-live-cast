@@ -16,6 +16,27 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: false,
   },
+  /**
+   * Deep links.
+   *
+   * Push payloads carry `data.link = footylive://match/<id>`; the app listens
+   * for `appUrlOpen` and routes to the match screen. After `npx cap add
+   * android`, add this to the MainActivity in AndroidManifest.xml:
+   *
+   *   <intent-filter>
+   *     <action android:name="android.intent.action.VIEW" />
+   *     <category android:name="android.intent.category.DEFAULT" />
+   *     <category android:name="android.intent.category.BROWSABLE" />
+   *     <data android:scheme="footylive" android:host="match" />
+   *   </intent-filter>
+   *
+   * and, for tapping an FCM notification:
+   *
+   *   <intent-filter>
+   *     <action android:name="MATCH_ALERT" />
+   *     <category android:name="android.intent.category.DEFAULT" />
+   *   </intent-filter>
+   */
   plugins: {
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"],

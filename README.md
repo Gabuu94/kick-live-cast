@@ -1,4 +1,6 @@
-# Welcome to your Lovable project
+# Football Live TV
+
+A live football scores, TV listings and streaming-guide app built with TanStack Start.
 
 This project was built with [Lovable](https://lovable.dev).
 

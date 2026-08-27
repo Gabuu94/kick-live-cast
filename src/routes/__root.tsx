@@ -16,6 +16,7 @@ import { TopBar, BottomNav } from "../components/app-chrome";
 import { AlertsProvider } from "../lib/native/use-alerts";
 import { useAdMob } from "../lib/native/use-ads";
 import { hideSplash } from "../lib/native/splash";
+import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -158,6 +159,7 @@ function AppFrame() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <BottomNav />
+      <Toaster position="top-center" richColors />
     </div>
   );
 }

@@ -30,7 +30,7 @@ export async function shareMatch(matchId: string, teams: string) {
   // Web path: prefer the native Web Share API, then fall back to clipboard.
   if (typeof navigator !== "undefined" && "share" in navigator) {
     try {
-      await navigator.share({ title, text: body, url: webUrl });
+      await navigator.share({ title, text: body, url: deepLink });
       return;
     } catch (err) {
       // User cancelled or share failed — fall through to clipboard.
@@ -38,7 +38,7 @@ export async function shareMatch(matchId: string, teams: string) {
   }
 
   if (typeof navigator !== "undefined" && "clipboard" in navigator) {
-    await navigator.clipboard.writeText(`${title}\n${webUrl}`);
+    await navigator.clipboard.writeText(body);
     const { toast } = await import("sonner");
     toast.success("Match link copied to clipboard");
   } else {

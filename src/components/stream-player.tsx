@@ -1,14 +1,34 @@
-import { useEffect, useRef, useState } from "react";
-import { ExternalLink, Loader2, Play, ShieldCheck, Tv } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  AlertTriangle,
+  Cast,
+  ExternalLink,
+  Loader2,
+  Play,
+  RotateCw,
+  Settings2,
+  ShieldCheck,
+  Tv,
+} from "lucide-react";
 import {
   getRegion,
   playableSource,
   regionName,
   sourceLink,
   sourcesForMatch,
+  sourcesForRegion,
   youtubeEmbedUrl,
   type StreamSource,
 } from "@/lib/streams";
+import {
+  getQualityPref,
+  qualityLabel,
+  resolveLevel,
+  setQualityPref,
+  type QualityLevel,
+  type QualityPref,
+} from "@/lib/stream-quality";
+import { useCast } from "@/lib/native/use-cast";
 import { showRewarded } from "@/lib/native/ads";
 import { openExternal } from "@/lib/native/browser";
 import { cn } from "@/lib/utils";
@@ -25,43 +45,250 @@ export function useRegion(): string {
   return region;
 }
 
-/** Plays a direct HLS/MP4 stream. hls.js loads lazily, browser only. */
-function HlsVideo({ url }: { url: string }) {
+const MAX_RETRIES = 4;
+
+/** Human wording for the failure modes hls.js reports. */
+function errorMessage(kind: "network" | "media" | "unsupported" | "gone"): string {
+  switch (kind) {
+    case "network":
+      return "We lost the connection to the broadcaster. Check your internet and we'll keep trying.";
+    case "media":
+      return "The video feed glitched. Reconnecting to the live edge…";
+    case "unsupported":
+      return "This device can't play this stream format.";
+    default:
+      return "The broadcaster stopped this stream. It may be between matches.";
+  }
+}
+
+/**
+ * Plays a direct HLS/MP4 stream: remembered quality, plain-language errors and
+ * automatic reconnection with backoff. hls.js loads lazily, browser only.
+ */
+function HlsVideo({
+  url,
+  title,
+  subtitle,
+}: {
+  url: string;
+  title: string;
+  subtitle?: string;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
-  const [error, setError] = useState(false);
+  const hlsRef = useRef<{ destroy: () => void; currentLevel: number } | null>(null);
+  const retries = useRef(0);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [levels, setLevels] = useState<QualityLevel[]>([]);
+  const [pref, setPref] = useState<QualityPref>("auto");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [fatal, setFatal] = useState(false);
+  const [reconnecting, setReconnecting] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+
+  const cast = useCast();
+
+  useEffect(() => setPref(getQualityPref()), []);
+
+  const start = useCallback(
+    async (savedPref: QualityPref) => {
+      const video = ref.current;
+      if (!video) return;
+      setError(null);
+      setFatal(false);
+
+      if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = url;
+        void video.play().catch(() => undefined);
+        return;
+      }
+
+      const { default: Hls } = await import("hls.js");
+      if (!Hls.isSupported()) {
+        setError(errorMessage("unsupported"));
+        setFatal(true);
+        return;
+      }
+
+      const hls = new Hls({ lowLatencyMode: true });
+      hlsRef.current = hls as unknown as { destroy: () => void; currentLevel: number };
+      hls.loadSource(url);
+      hls.attachMedia(video);
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        const parsed: QualityLevel[] = hls.levels.map((l, index) => ({
+          index,
+          height: l.height ?? 0,
+          bitrate: l.bitrate ?? 0,
+        }));
+        const usable = parsed.filter((l) => l.height > 0);
+        setLevels(usable);
+        hls.currentLevel = resolveLevel(usable, savedPref);
+        retries.current = 0;
+        setAttempt(0);
+        setReconnecting(false);
+        setError(null);
+        void video.play().catch(() => undefined);
+      });
+
+      hls.on(Hls.Events.ERROR, (_e, data) => {
+        if (!data.fatal) return;
+        const isNetwork = data.type === Hls.ErrorTypes.NETWORK_ERROR;
+        setError(errorMessage(isNetwork ? "network" : "media"));
+
+        if (retries.current >= MAX_RETRIES) {
+          setFatal(true);
+          setReconnecting(false);
+          setError(errorMessage("gone"));
+          hls.destroy();
+          return;
+        }
+
+        retries.current += 1;
+        setAttempt(retries.current);
+        setReconnecting(true);
+
+        if (isNetwork) {
+          timer.current = setTimeout(
+            () => hls.startLoad(),
+            Math.min(1000 * 2 ** (retries.current - 1), 8000),
+          );
+        } else {
+          hls.recoverMediaError();
+        }
+      });
+    },
+    [url],
+  );
 
   useEffect(() => {
-    const video = ref.current;
-    if (!video) return;
-    let destroy: (() => void) | undefined;
+    retries.current = 0;
+    void start(getQualityPref());
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+      hlsRef.current?.destroy();
+      hlsRef.current = null;
+    };
+  }, [start]);
 
-    if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = url;
-      void video.play().catch(() => undefined);
-    } else {
-      void (async () => {
-        const { default: Hls } = await import("hls.js");
-        if (!Hls.isSupported()) return setError(true);
-        const hls = new Hls({ lowLatencyMode: true });
-        hls.loadSource(url);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.ERROR, (_e, data) => {
-          if (data.fatal) setError(true);
-        });
-        destroy = () => hls.destroy();
-      })();
-    }
-    return () => destroy?.();
-  }, [url]);
-
-  if (error) {
-    return (
-      <div className="grid aspect-video place-items-center bg-surface-2 px-6 text-center text-xs text-muted-foreground">
-        This stream isn't available right now. Try one of the official sources below.
-      </div>
-    );
+  function choose(next: QualityPref) {
+    setPref(next);
+    setQualityPref(next);
+    setMenuOpen(false);
+    if (hlsRef.current) hlsRef.current.currentLevel = resolveLevel(levels, next);
   }
-  return <video ref={ref} controls playsInline className="aspect-video w-full bg-black" />;
+
+  function retryNow() {
+    if (timer.current) clearTimeout(timer.current);
+    hlsRef.current?.destroy();
+    hlsRef.current = null;
+    retries.current = 0;
+    setAttempt(0);
+    setReconnecting(true);
+    void start(pref);
+  }
+
+  return (
+    <div className="relative">
+      <video ref={ref} controls playsInline className="aspect-video w-full bg-black" />
+
+      {/* Cast + quality controls */}
+      <div className="absolute right-2 top-2 flex items-center gap-2">
+        {cast.available && (
+          <button
+            type="button"
+            onClick={() => (cast.connected ? cast.stop() : void cast.cast(url, title, subtitle))}
+            aria-label={cast.connected ? "Stop casting" : "Cast to TV"}
+            className={cn(
+              "grid h-8 w-8 place-items-center rounded-full bg-black/60 text-white backdrop-blur",
+              cast.connected && "bg-primary text-primary-foreground",
+            )}
+          >
+            <Cast className="h-4 w-4" />
+          </button>
+        )}
+        {levels.length > 1 && (
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label="Video quality"
+              className="flex h-8 items-center gap-1 rounded-full bg-black/60 px-2.5 text-[11px] font-bold text-white backdrop-blur"
+            >
+              <Settings2 className="h-3.5 w-3.5" />
+              {pref === "auto" ? "Auto" : `${pref}p`}
+            </button>
+            {menuOpen && (
+              <div className="absolute right-0 z-10 mt-1 w-40 overflow-hidden rounded-xl bg-card ring-1 ring-border">
+                <button
+                  type="button"
+                  onClick={() => choose("auto")}
+                  className={cn(
+                    "block w-full px-3 py-2 text-left text-xs",
+                    pref === "auto" ? "bg-primary/15 font-bold text-primary" : "text-foreground",
+                  )}
+                >
+                  Auto (recommended)
+                </button>
+                {[...levels]
+                  .sort((a, b) => b.height - a.height)
+                  .map((level) => (
+                    <button
+                      key={level.index}
+                      type="button"
+                      onClick={() => choose(level.height)}
+                      className={cn(
+                        "block w-full px-3 py-2 text-left text-xs",
+                        pref === level.height
+                          ? "bg-primary/15 font-bold text-primary"
+                          : "text-foreground",
+                      )}
+                    >
+                      {qualityLabel(level)}
+                    </button>
+                  ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {cast.connected && (
+        <p className="flex items-center gap-1.5 bg-primary/10 px-3 py-2 text-[11px] font-semibold text-primary">
+          <Cast className="h-3.5 w-3.5" /> Playing on {cast.device ?? "your TV"}
+        </p>
+      )}
+      {cast.error && (
+        <p className="bg-destructive/10 px-3 py-2 text-[11px] text-destructive">{cast.error}</p>
+      )}
+
+      {error && (
+        <div className="absolute inset-0 grid place-items-center bg-background/85 px-6 text-center">
+          <div>
+            <AlertTriangle className="mx-auto h-6 w-6 text-live" />
+            <p className="mt-2 text-sm font-semibold">{error}</p>
+            {reconnecting && !fatal && (
+              <p className="mt-1 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Reconnecting… attempt {attempt} of {MAX_RETRIES}
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={retryNow}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-glow"
+            >
+              <RotateCw className="h-3.5 w-3.5" /> Try again
+            </button>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Still stuck? The official sources below always work.
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function SourceRow({ source }: { source: StreamSource }) {
@@ -102,6 +329,67 @@ export function StreamSourceList({
         <SourceRow key={s.id} source={s} />
       ))}
     </div>
+  );
+}
+
+/**
+ * Watch-tab casting panel: sends any castable (direct) live feed in the
+ * viewer's region straight to a Chromecast.
+ */
+export function CastPanel({ region }: { region: string }) {
+  const cast = useCast();
+  const castable = sourcesForRegion(region).filter((s) => s.kind === "hls" && s.url);
+
+  if (!cast.available) return null;
+
+  return (
+    <section className="rounded-2xl bg-card p-4 ring-1 ring-border">
+      <h2 className="flex items-center gap-2 font-display text-sm font-bold uppercase tracking-widest text-primary">
+        <Cast className="h-4 w-4" /> Cast to your TV
+      </h2>
+      <p className="mt-1 text-xs text-muted-foreground">
+        {cast.connected
+          ? `Connected to ${cast.device ?? "your TV"}.`
+          : "Send a live feed to any Chromecast on your Wi-Fi."}
+      </p>
+      {cast.error && <p className="mt-2 text-xs text-destructive">{cast.error}</p>}
+
+      {castable.length > 0 ? (
+        <div className="mt-3 space-y-2">
+          {castable.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => void cast.cast(s.url!, s.name, s.coverage)}
+              className="flex w-full items-center gap-3 rounded-xl bg-surface-2 px-3 py-2.5 text-left transition-colors hover:bg-surface-2/70"
+            >
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
+                <Cast className="h-4 w-4" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-semibold">{s.name}</span>
+                <span className="block truncate text-xs text-muted-foreground">{s.coverage}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-3 rounded-xl bg-surface-2 px-3 py-2.5 text-xs text-muted-foreground">
+          No direct feed to cast in {regionName(region)} right now. YouTube and broadcaster apps
+          cast from their own app — open a source below and use its cast button.
+        </p>
+      )}
+
+      {cast.connected && (
+        <button
+          type="button"
+          onClick={cast.stop}
+          className="mt-3 rounded-full bg-surface-2 px-4 py-2 text-xs font-bold text-foreground"
+        >
+          Stop casting
+        </button>
+      )}
+    </section>
   );
 }
 
@@ -147,7 +435,7 @@ export function MatchStream({
             className="aspect-video w-full border-0 bg-black"
           />
         ) : (
-          <HlsVideo url={playable.url!} />
+          <HlsVideo url={playable.url!} title={playable.name} subtitle={playable.coverage} />
         )
       ) : (
         <div className="grid aspect-video place-items-center bg-surface-2">

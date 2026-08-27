@@ -1,10 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
-import { ArrowLeft, Loader2, MapPin, Play, Share2, Tv } from "lucide-react";
+import { ArrowLeft, MapPin, Share2 } from "lucide-react";
 import { TeamCrest } from "@/components/match-card";
 import { AdSlot } from "@/components/ad-slot";
 import { MatchInfoPanel, OddsPanel } from "@/components/odds-panel";
-import { showRewarded } from "@/lib/native/ads";
+import { MatchStream } from "@/components/stream-player";
 import { shareMatch } from "@/lib/native/share";
 import { getLeague, getMatch, formatDay, formatKickoff } from "@/lib/football-data";
 import { cn } from "@/lib/utils";

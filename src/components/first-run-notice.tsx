@@ -58,10 +58,13 @@ export function FirstRunNotice() {
             league, federation or broadcaster. All names and logos belong to their owners.
           </li>
           <li>
-            <span className="font-semibold text-foreground">No streams are hosted here.</span> The
-            app lists which official channel or rights holder is showing a match and links out to
-            them. We do not host, upload or rebroadcast any match footage.
+            <span className="font-semibold text-foreground">No streams are hosted here.</span> Where
+            a match is free to watch, it plays from the rights holder's own official player
+            (FIFA+, UEFA.tv, a league channel or a free-to-air broadcaster). Everything else links
+            out to whoever holds the rights in your country. We never host, upload, proxy or
+            rebroadcast match footage, and free coverage varies by country.
           </li>
+
           <li>
             <span className="font-semibold text-foreground">Odds are informational.</span> Odds and
             win probabilities are shown for context only. No betting takes place in this app, no

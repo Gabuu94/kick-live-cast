@@ -53,12 +53,37 @@ territory by territory. Your realistic options:
 4. **Your own rights** — for lower leagues, buying regional digital rights is
    cheap and gives you something no competitor has.
 
-Technically the player takes an **HLS (.m3u8)** URL; use `hls.js` on web and the
-native player via Capacitor on Android. The unlock button on the match screen is
-already wired to a rewarded ad, so the stream slot only needs the URL.
+### What is already built (free legal streaming)
 
-Avoid re-streaming or scraping IPTV links — that is the fastest way to a Play
-Store takedown and a DMCA claim.
+`src/lib/streams.ts` is a directory of rights holders' **own free services** —
+FIFA+, UEFA.tv, CAF TV, SABC Sport, RTVE, RaiPlay, ARD/ZDF, ITVX, TF1, StarTimes
+and the official league YouTube channels. The Watch tab (`/watch`) filters them
+by the viewer's country, and the match screen shows the ones relevant to that
+league.
+
+Three source kinds are supported by `src/components/stream-player.tsx`:
+
+| Kind | Behaviour |
+| --- | --- |
+| `youtube` | Plays in-app through YouTube's own IFrame embed (sanctioned, ads are YouTube's) |
+| `hls` | Plays in-app with `hls.js` / native HLS — use only for feeds you're licensed for |
+| `web` | Opens the broadcaster's site or app — always safe |
+
+In-app playback is deliberately gated: a source is only offered as "watch free"
+when it is embeddable **and** declares the match's league. Everything else is a
+link-out, so the app never promises a stream it can't deliver.
+
+Add your own sources with no code change via the `VITE_STREAM_SOURCES` env var
+(JSON array of `StreamSource`); they take priority over the built-ins. That is
+where a licensed HLS URL or a bookmaker/Sportradar feed goes if you buy one.
+
+### Keeping it legal
+
+Never re-stream, proxy or scrape IPTV `.m3u8` links, and never embed a YouTube
+video whose owner disabled embedding. Both are a fast route to a Play Store
+takedown and a DMCA claim. Free coverage genuinely varies by country — the UI
+says so rather than implying every match is free.
+
 
 ## 4. News
 

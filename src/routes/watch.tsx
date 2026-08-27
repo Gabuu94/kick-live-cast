@@ -3,7 +3,7 @@ import { Radio, ShieldCheck } from "lucide-react";
 import { Page } from "@/components/app-chrome";
 import { AdSlot } from "@/components/ad-slot";
 import { MatchCard } from "@/components/match-card";
-import { StreamSourceList, useRegion } from "@/components/stream-player";
+import { CastPanel, StreamSourceList, useRegion } from "@/components/stream-player";
 import { REGIONS, regionName, setRegion, sourcesForRegion } from "@/lib/streams";
 import { matches } from "@/lib/football-data";
 import { cn } from "@/lib/utils";

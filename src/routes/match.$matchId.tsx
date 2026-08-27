@@ -56,9 +56,17 @@ function MatchPage() {
           <Link to="/" className="p-1">
             <ArrowLeft className="h-5 w-5" />
           </Link>
-          <span>
+          <span className="flex-1 truncate">
             {league?.badge} {league?.name}
           </span>
+          <button
+            type="button"
+            onClick={() => shareMatch(match.id, `${match.home.name} vs ${match.away.name}`)}
+            aria-label="Share match"
+            className="grid h-8 w-8 place-items-center rounded-full bg-surface-2 text-muted-foreground transition-colors hover:text-primary"
+          >
+            <Share2 className="h-4 w-4" />
+          </button>
         </div>
 
         <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">

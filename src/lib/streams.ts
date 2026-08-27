@@ -254,6 +254,7 @@ export function setRegion(code: string): void {
 }
 
 export function regionName(code: string): string {
+  if (code === "*") return "your region";
   return REGIONS.find((r) => r.code === code)?.name ?? "your region";
 }
 
@@ -282,9 +283,21 @@ export function sourcesForMatch(leagueId: string, region: string): StreamSource[
   return [...specific, ...general];
 }
 
-/** The one source we offer to play inside the app, if any. */
-export function playableSource(sources: StreamSource[]): StreamSource | undefined {
-  return sources.find((s) => s.kind === "hls" || s.kind === "youtube");
+/**
+ * The one source we offer to play inside the app, if any.
+ *
+ * Deliberately strict: only an embeddable source that actually covers this
+ * league counts. A generic football channel must never be presented as "watch
+ * this match free" — that is the kind of overpromise that gets a listing
+ * pulled for deceptive behaviour.
+ */
+export function playableSource(
+  sources: StreamSource[],
+  leagueId: string,
+): StreamSource | undefined {
+  return sources.find(
+    (s) => (s.kind === "hls" || s.kind === "youtube") && s.leagues?.includes(leagueId),
+  );
 }
 
 export function youtubeEmbedUrl(source: StreamSource): string {

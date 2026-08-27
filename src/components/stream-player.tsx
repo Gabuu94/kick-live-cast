@@ -119,7 +119,7 @@ export function MatchStream({
 }) {
   const region = useRegion();
   const sources = sourcesForMatch(leagueId, region);
-  const playable = playableSource(sources);
+  const playable = playableSource(sources, leagueId);
   const others = sources.filter((s) => s.id !== playable?.id);
 
   const [playing, setPlaying] = useState(false);

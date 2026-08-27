@@ -35,7 +35,7 @@ function WatchPage() {
   const live = matches.filter((m) => m.status === "live");
 
   return (
-    <Page title="Watch" subtitle={`Free, legal live football in ${regionName(region)}`}>
+    <Page title="Watch" subtitle={region === "*" ? "Free, legal live football wherever you are" : `Free, legal live football in ${regionName(region)}`}>
       <section className="rounded-2xl bg-card p-4 ring-1 ring-border">
         <h2 className="font-display text-sm font-bold uppercase tracking-widest text-primary">
           Your country

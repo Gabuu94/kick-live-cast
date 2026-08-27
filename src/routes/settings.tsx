@@ -135,6 +135,40 @@ function SettingsPage() {
         )}
       </section>
 
+      <section className="overflow-hidden rounded-2xl bg-card ring-1 ring-border">
+        <div className="border-b border-border p-4">
+          <p className="text-sm font-semibold">Privacy &amp; ads</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Ads from Google AdMob keep {APP_NAME} free.
+          </p>
+        </div>
+        <button
+          onClick={async () => {
+            const opened = await openAdPrivacyOptions();
+            if (!opened) {
+              toast.info("Ad privacy options are available in the Android app.");
+            }
+          }}
+          className="flex w-full items-center gap-3 border-b border-border p-4 text-left"
+        >
+          <ShieldCheck className="h-5 w-5 shrink-0 text-primary" />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium">Ad privacy options</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Change your consent for personalised ads.
+            </p>
+          </div>
+        </button>
+        <Link to="/privacy" className="flex items-center gap-3 border-b border-border p-4">
+          <Lock className="h-5 w-5 shrink-0 text-primary" />
+          <p className="flex-1 text-sm font-medium">Privacy Policy</p>
+        </Link>
+        <Link to="/terms" className="flex items-center gap-3 p-4">
+          <FileText className="h-5 w-5 shrink-0 text-primary" />
+          <p className="flex-1 text-sm font-medium">Terms of Use</p>
+        </Link>
+      </section>
+
       <Link
         to="/about"
         className="flex items-center gap-3 rounded-2xl bg-card p-4 ring-1 ring-border"
@@ -147,6 +181,13 @@ function SettingsPage() {
           </p>
         </div>
       </Link>
+
+      <p className="px-1 pb-2 text-[11px] leading-relaxed text-muted-foreground">
+        {APP_NAME} is an unofficial, independent app and is not affiliated with any club, league or
+        broadcaster. It does not host or rebroadcast any match footage. Odds are shown for
+        information only — no betting takes place in this app. 18+.
+      </p>
+
     </Page>
   );
 }

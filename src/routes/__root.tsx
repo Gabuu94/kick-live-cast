@@ -159,6 +159,7 @@ function AppFrame() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <BottomNav />
+      <Toaster position="top-center" richColors />
     </div>
   );
 }

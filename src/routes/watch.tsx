@@ -75,6 +75,8 @@ function WatchPage() {
         </section>
       )}
 
+      <CastPanel region={region} />
+
       <AdSlot />
 
       {free.length > 0 && (

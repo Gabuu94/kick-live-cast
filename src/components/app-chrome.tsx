@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, CalendarDays, Home, Newspaper, Settings, Star, Trophy, Tv } from "lucide-react";
+import { Bell, CalendarDays, Home, Newspaper, Settings, Star, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
+import logoMark from "@/assets/logo-mark.png";
 
 const tabs = [
   { to: "/", label: "Live", icon: Home },
@@ -15,9 +16,13 @@ export function TopBar() {
     <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-2xl items-center gap-2 px-4">
         <Link to="/" className="flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-primary text-primary-foreground shadow-glow">
-            <Tv className="h-5 w-5" strokeWidth={2.5} />
-          </span>
+          <img
+            src={logoMark}
+            alt=""
+            width={1024}
+            height={1024}
+            className="h-8 w-8 object-contain drop-shadow-[0_0_10px_hsl(var(--primary)/0.35)]"
+          />
           <span className="font-display text-xl font-bold uppercase tracking-wide">
             Football{" "}
             <span className="text-primary">Live TV</span>

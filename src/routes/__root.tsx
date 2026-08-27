@@ -17,6 +17,7 @@ import { AlertsProvider } from "../lib/native/use-alerts";
 import { useAdMob } from "../lib/native/use-ads";
 import { hideSplash } from "../lib/native/splash";
 import { Toaster } from "../components/ui/sonner";
+import { FirstRunNotice } from "../components/first-run-notice";
 
 function NotFoundComponent() {
   return (
@@ -160,6 +161,7 @@ function AppFrame() {
       <Outlet />
       <BottomNav />
       <Toaster position="top-center" richColors />
+      <FirstRunNotice />
     </div>
   );
 }

@@ -1,6 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Bell, ChevronDown, Info, RotateCcw, Star, Trophy } from "lucide-react";
+import {
+  Bell,
+  ChevronDown,
+  FileText,
+  Info,
+  Lock,
+  RotateCcw,
+  ShieldCheck,
+  Star,
+  Trophy,
+} from "lucide-react";
+import { toast } from "sonner";
+import { openAdPrivacyOptions } from "@/lib/native/consent";
 import { Page } from "@/components/app-chrome";
 import { Switch } from "@/components/ui/switch";
 import { useAlerts } from "@/lib/native/use-alerts";

@@ -1,4 +1,5 @@
 import { isNative } from "./platform";
+import { ensureConsent } from "./consent";
 
 /**
  * AdMob unit IDs.
@@ -25,6 +26,8 @@ async function admob() {
 
 export async function initAds(): Promise<void> {
   if (!isNative() || initialized) return;
+  // Google Play / AdMob policy: collect UMP consent before requesting ads.
+  await ensureConsent();
   const { AdMob } = await admob();
   await AdMob.initialize({ initializeForTesting: TESTING });
   initialized = true;

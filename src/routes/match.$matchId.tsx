@@ -38,15 +38,8 @@ export const Route = createFileRoute("/match/$matchId")({
 function MatchPage() {
   const { match } = Route.useLoaderData();
   const league = getLeague(match.leagueId);
-  const [unlocked, setUnlocked] = useState(false);
-  const [unlocking, setUnlocking] = useState(false);
 
-  async function unlockStream() {
-    setUnlocking(true);
-    const earned = await showRewarded();
-    setUnlocking(false);
-    if (earned) setUnlocked(true);
-  }
+
 
   return (
     <main className="mx-auto min-h-screen max-w-2xl bg-pitch pb-24">

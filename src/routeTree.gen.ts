@@ -19,6 +19,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StandingsRouteImport } from './routes/standings'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as WatchRouteImport } from './routes/watch'
 import { Route as MatchMatchIdRouteImport } from './routes/match.$matchId'
 import { Route as ApiPublicPushEventsRouteImport } from './routes/api.public.push.events'
 
@@ -72,6 +73,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WatchRoute = WatchRouteImport.update({
+  id: '/watch',
+  path: '/watch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MatchMatchIdRoute = MatchMatchIdRouteImport.update({
   id: '/match/$matchId',
   path: '/match/$matchId',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/standings': typeof StandingsRoute
   '/terms': typeof TermsRoute
+  '/watch': typeof WatchRoute
   '/match/$matchId': typeof MatchMatchIdRoute
   '/api/public/push/events': typeof ApiPublicPushEventsRoute
 }
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/standings': typeof StandingsRoute
   '/terms': typeof TermsRoute
+  '/watch': typeof WatchRoute
   '/match/$matchId': typeof MatchMatchIdRoute
   '/api/public/push/events': typeof ApiPublicPushEventsRoute
 }
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/standings': typeof StandingsRoute
   '/terms': typeof TermsRoute
+  '/watch': typeof WatchRoute
   '/match/$matchId': typeof MatchMatchIdRoute
   '/api/public/push/events': typeof ApiPublicPushEventsRoute
 }
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/standings'
     | '/terms'
+    | '/watch'
     | '/match/$matchId'
     | '/api/public/push/events'
   fileRoutesByTo: FileRoutesByTo
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/standings'
     | '/terms'
+    | '/watch'
     | '/match/$matchId'
     | '/api/public/push/events'
   id:
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/standings'
     | '/terms'
+    | '/watch'
     | '/match/$matchId'
     | '/api/public/push/events'
   fileRoutesById: FileRoutesById
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   StandingsRoute: typeof StandingsRoute
   TermsRoute: typeof TermsRoute
+  WatchRoute: typeof WatchRoute
   MatchMatchIdRoute: typeof MatchMatchIdRoute
   ApiPublicPushEventsRoute: typeof ApiPublicPushEventsRoute
 }
@@ -258,6 +271,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/watch': {
+      id: '/watch'
+      path: '/watch'
+      fullPath: '/watch'
+      preLoaderRoute: typeof WatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/match/$matchId': {
       id: '/match/$matchId'
       path: '/match/$matchId'
@@ -286,6 +306,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   StandingsRoute: StandingsRoute,
   TermsRoute: TermsRoute,
+  WatchRoute: WatchRoute,
   MatchMatchIdRoute: MatchMatchIdRoute,
   ApiPublicPushEventsRoute: ApiPublicPushEventsRoute,
 }

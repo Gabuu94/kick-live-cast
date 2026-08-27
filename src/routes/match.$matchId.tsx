@@ -1,10 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
-import { ArrowLeft, Loader2, MapPin, Play, Share2, Tv } from "lucide-react";
+import { ArrowLeft, MapPin, Share2 } from "lucide-react";
 import { TeamCrest } from "@/components/match-card";
 import { AdSlot } from "@/components/ad-slot";
 import { MatchInfoPanel, OddsPanel } from "@/components/odds-panel";
-import { showRewarded } from "@/lib/native/ads";
+import { MatchStream } from "@/components/stream-player";
 import { shareMatch } from "@/lib/native/share";
 import { getLeague, getMatch, formatDay, formatKickoff } from "@/lib/football-data";
 import { cn } from "@/lib/utils";
@@ -39,15 +38,8 @@ export const Route = createFileRoute("/match/$matchId")({
 function MatchPage() {
   const { match } = Route.useLoaderData();
   const league = getLeague(match.leagueId);
-  const [unlocked, setUnlocked] = useState(false);
-  const [unlocking, setUnlocking] = useState(false);
 
-  async function unlockStream() {
-    setUnlocking(true);
-    const earned = await showRewarded();
-    setUnlocking(false);
-    if (earned) setUnlocked(true);
-  }
+
 
   return (
     <main className="mx-auto min-h-screen max-w-2xl bg-pitch pb-24">
@@ -110,39 +102,9 @@ function MatchPage() {
       </div>
 
       <div className="space-y-4 px-4 pt-4">
-        {/* Stream slot — connect your own licensed stream URL here */}
-        <section className="overflow-hidden rounded-2xl bg-card ring-1 ring-border">
-          <div className="grid aspect-video place-items-center bg-surface-2">
-            <div className="text-center">
-              <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-gradient-primary shadow-glow">
-                <Play className="h-6 w-6 fill-primary-foreground text-primary-foreground" />
-              </span>
-              <p className="mt-3 text-sm font-semibold">
-                {unlocked ? "Stream ready" : "Stream player"}
-              </p>
-              <p className="mt-1 px-6 text-xs text-muted-foreground">
-                {unlocked
-                  ? "Connect your licensed stream source to start playback."
-                  : "Watch a short ad to unlock the HD stream for this match."}
-              </p>
-              {!unlocked && (
-                <button
-                  type="button"
-                  onClick={unlockStream}
-                  disabled={unlocking}
-                  className="mt-3 inline-flex items-center gap-2 rounded-full bg-gradient-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-glow disabled:opacity-60"
-                >
-                  {unlocking && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                  Watch ad to unlock
-                </button>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-2 border-t border-border px-3 py-2.5 text-xs text-muted-foreground">
-            <Tv className="h-4 w-4 text-primary" />
-            <span className="truncate">{match.channels.join(" · ")}</span>
-          </div>
-        </section>
+        {/* Free legal streams for this match + the official broadcasters */}
+        <MatchStream leagueId={match.leagueId} channels={match.channels} />
+
 
         <AdSlot />
 

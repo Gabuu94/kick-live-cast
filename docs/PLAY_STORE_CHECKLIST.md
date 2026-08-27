@@ -108,19 +108,48 @@ Also worth doing: keep club logos to in-app content served from your data
 provider (the app fetches them by domain at runtime), and use your own artwork
 for the icon, splash and screenshots — which is already the case.
 
-## 6. Store listing content you still need to produce
+## 6. Store listing content — DONE, in `/mnt/documents/play-store/`
 
-- App icon 512×512 (use `resources/icon.png`)
-- Feature graphic 1024×500
-- At least 2 phone screenshots (4–8 recommended), plus 7" and 10" tablet shots
-  if you declare tablet support
-- Short description (80 chars) and full description (4000 chars)
-- Public **privacy policy URL** — publish this web app and use
-  `https://<your-domain>/privacy`
-- App access instructions: "No login required — all features are open."
+| Asset | File | Status |
+| --- | --- | --- |
+| App icon 512×512 | `app-icon-512.png` | Ready |
+| Feature graphic 1024×500 | `feature-graphic.png` | Ready |
+| Phone screenshots 1080×1920 | `screenshots-listing/1…6.png` (captioned) | Ready — upload 5; skip `6_match_detail.png` unless you hold streaming rights |
+| Raw screenshots | `screenshots/` | Alternative, uncaptioned |
+| Title, short + full description, promo script | `docs/PLAY_STORE_LISTING.md` | Ready to copy-paste |
+| Privacy policy URL | publish the web app, use `https://<domain>/privacy` | You |
+| Tablet screenshots | — | Only if you declare tablet support |
 
-## 7. Pre-launch
+## 7. Build and sign the .aab
+
+Full copy-paste runbook: **`docs/RELEASE_BUILD.md`** (keystore, signing config,
+manifest entries, `bundleRelease`, `bundletool` verification). This has to run
+on your own machine — the build needs the Android SDK and your upload keystore
+must never leave it.
+
+## 8. Pre-launch
 
 Upload to **internal testing** first, read the Play Console **pre-launch
 report** (it catches crashes, ANRs, accessibility and policy issues on real
 devices), fix anything flagged, then promote to production.
+
+## 9. Verified: consent really does run before any ad request
+
+`src/lib/native/ads.consent.test.ts` drives the real ad code against a fake
+AdMob plugin and asserts the call ordering. All 9 cases pass:
+
+- `requestConsentInfo` → `showConsentForm` → `initialize`, in that order
+- banner, interstitial and rewarded each collect consent before their first
+  ad request
+- consent is requested **once** even when three ad surfaces start in parallel
+- outside the EEA/UK (`NOT_REQUIRED`) no form is shown, but the status is
+  still checked before `initialize`
+- if the consent check fails (offline), ads still serve non-personalised
+- Settings → "Ad privacy options" opens the UMP privacy options form
+- on the web build nothing touches AdMob at all
+
+Re-run any time with `npx vitest run src/lib/native/ads.consent.test.ts`.
+On-device, confirm the real dialog by installing a fresh build with the device
+region set to an EEA country — a published GDPR message in AdMob is required
+(section 2, step 3) or the form never appears.
+

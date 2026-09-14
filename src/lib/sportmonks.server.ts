@@ -176,7 +176,7 @@ function toMatch(fx: SmFixture): Match | null {
     new Set((fx.tvstations ?? []).map((t) => t.tvstation?.name).filter(Boolean) as string[]),
   ).slice(0, 3);
 
-  return {
+  const match: Match = {
     id: String(fx.id),
     leagueId,
     home: toTeam(home),
@@ -184,13 +184,15 @@ function toMatch(fx: SmFixture): Match | null {
     homeScore: status === "upcoming" ? null : (currentScore(fx, "home") ?? 0),
     awayScore: status === "upcoming" ? null : (currentScore(fx, "away") ?? 0),
     status,
-    minute: minuteOf(fx),
     kickoff: new Date(fx.starting_at.replace(" ", "T") + "Z").toISOString(),
     venue: fx.venue?.name ?? "TBD",
     channels,
     events,
     stats,
   };
+  const minute = minuteOf(fx);
+  if (minute != null) match.minute = minute;
+  return match;
 }
 
 /* ------------------------------- queries -------------------------------- */

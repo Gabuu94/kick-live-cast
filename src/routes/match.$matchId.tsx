@@ -1,45 +1,48 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, MapPin, Share2 } from "lucide-react";
 import { TeamCrest } from "@/components/match-card";
 import { AdSlot } from "@/components/ad-slot";
 import { MatchInfoPanel, OddsPanel } from "@/components/odds-panel";
 import { MatchStream } from "@/components/stream-player";
 import { shareMatch } from "@/lib/native/share";
-import { getLeague, getMatch, formatDay, formatKickoff } from "@/lib/football-data";
+import { getLeague, formatDay, formatKickoff } from "@/lib/football-data";
+import { useMatch } from "@/lib/use-football";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/match/$matchId")({
-  loader: ({ params }) => {
-    const match = getMatch(params.matchId);
-    if (!match) throw notFound();
-    return { match };
-  },
-  head: ({ loaderData }) => {
-    if (!loaderData) {
-      return {
-        meta: [{ title: "Match unavailable — Football Live TV" }, { name: "robots", content: "noindex" }],
-      };
-    }
-    const { match } = loaderData;
-    const title = `${match.home.name} vs ${match.away.name} — Live Score & TV`;
-    const description = `Live score, timeline, stats and broadcast channels for ${match.home.name} vs ${match.away.name} at ${match.venue}.`;
-    return {
-      meta: [
-        { title },
-        { name: "description", content: description },
-        { property: "og:title", content: title },
-        { property: "og:description", content: description },
-      ],
-    };
-  },
+  head: () => ({
+    meta: [
+      { title: "Live Match Centre — Football Live TV" },
+      {
+        name: "description",
+        content:
+          "Live score, timeline, stats and broadcast channels for this football match, updated minute by minute.",
+      },
+      { property: "og:title", content: "Live Match Centre — Football Live TV" },
+      {
+        property: "og:description",
+        content: "Follow the score, goals, stats and where to watch this match live.",
+      },
+    ],
+  }),
   component: MatchPage,
 });
 
 function MatchPage() {
-  const { match } = Route.useLoaderData();
+  const { matchId } = Route.useParams();
+  const { match, isPending } = useMatch(matchId);
+
+  if (!match) {
+    return (
+      <main className="mx-auto grid min-h-screen max-w-2xl place-items-center bg-pitch px-4 pb-24">
+        <p className="text-sm text-muted-foreground">
+          {isPending ? "Loading match…" : "This match is no longer available."}
+        </p>
+      </main>
+    );
+  }
+
   const league = getLeague(match.leagueId);
-
-
 
   return (
     <main className="mx-auto min-h-screen max-w-2xl bg-pitch pb-24">

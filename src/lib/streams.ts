@@ -223,6 +223,71 @@ function fromEnv(): StreamSource[] {
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* Your own sources (device-local, added from Settings)                */
+/* ------------------------------------------------------------------ */
+
+const CUSTOM_KEY = "fltv.sources";
+
+/** Sources the user pasted in Settings. Stored on the device only. */
+export function customSources(): StreamSource[] {
+  if (typeof localStorage === "undefined") return [];
+  try {
+    const parsed = JSON.parse(localStorage.getItem(CUSTOM_KEY) ?? "[]");
+    return Array.isArray(parsed) ? (parsed as StreamSource[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCustom(list: StreamSource[]): void {
+  if (typeof localStorage === "undefined") return;
+  localStorage.setItem(CUSTOM_KEY, JSON.stringify(list));
+  window.dispatchEvent(new CustomEvent("fltv:sources"));
+}
+
+export function addCustomSource(input: {
+  name: string;
+  url: string;
+  leagues?: string[];
+  note?: string;
+}): StreamSource {
+  const url = input.url.trim();
+  const youtube = /youtube\.com|youtu\.be/i.test(url);
+  const videoId = youtube ? url.match(/(?:v=|youtu\.be\/|live\/)([\w-]{6,})/)?.[1] : undefined;
+  const channelId = youtube ? url.match(/channel\/(UC[\w-]+)/)?.[1] : undefined;
+
+  const source: StreamSource = {
+    id: `custom-${Date.now()}`,
+    name: input.name.trim() || "My source",
+    kind: youtube ? "youtube" : "hls",
+    coverage: "Added by you",
+    regions: ["*"],
+    ...(input.note ? { note: input.note } : {}),
+    ...(input.leagues && input.leagues.length > 0 ? { leagues: input.leagues } : {}),
+    ...(youtube ? (videoId ? { videoId } : channelId ? { channelId } : { videoId: url }) : { url }),
+  };
+
+  saveCustom([source, ...customSources()]);
+  return source;
+}
+
+export function removeCustomSource(id: string): void {
+  saveCustom(customSources().filter((s) => s.id !== id));
+}
+
+/** Everything the app may offer right now: your sources first. */
+export function allSources(): StreamSource[] {
+  return [...customSources(), ...fromEnv(), ...BUILT_IN];
+}
+
+/** True when the source can be played inside the app rather than linked out. */
+export function isEmbeddable(source: StreamSource): boolean {
+  if (source.kind === "hls") return Boolean(source.url);
+  if (source.kind === "youtube") return Boolean(source.videoId ?? source.channelId);
+  return false;
+}
+
 export const STREAM_SOURCES: StreamSource[] = [...fromEnv(), ...BUILT_IN];
 
 /* ------------------------------------------------------------------ */
@@ -268,7 +333,7 @@ function availableIn(source: StreamSource, region: string): boolean {
 
 /** Sources for a region, worldwide ones last. */
 export function sourcesForRegion(region: string): StreamSource[] {
-  return STREAM_SOURCES.filter((s) => availableIn(s, region)).sort((a, b) => {
+  return allSources().filter((s) => availableIn(s, region)).sort((a, b) => {
     const aLocal = a.regions.includes(region) ? 0 : 1;
     const bLocal = b.regions.includes(region) ? 0 : 1;
     return aLocal - bLocal;

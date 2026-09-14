@@ -15,6 +15,7 @@ import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as FixturesRouteImport } from './routes/fixtures'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as PredictRouteImport } from './routes/predict'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StandingsRouteImport } from './routes/standings'
@@ -51,6 +52,11 @@ const FixturesRoute = FixturesRouteImport.update({
 const NewsRoute = NewsRouteImport.update({
   id: '/news',
   path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PredictRoute = PredictRouteImport.update({
+  id: '/predict',
+  path: '/predict',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/favorites': typeof FavoritesRoute
   '/fixtures': typeof FixturesRoute
   '/news': typeof NewsRoute
+  '/predict': typeof PredictRoute
   '/privacy': typeof PrivacyRoute
   '/settings': typeof SettingsRoute
   '/standings': typeof StandingsRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/favorites': typeof FavoritesRoute
   '/fixtures': typeof FixturesRoute
   '/news': typeof NewsRoute
+  '/predict': typeof PredictRoute
   '/privacy': typeof PrivacyRoute
   '/settings': typeof SettingsRoute
   '/standings': typeof StandingsRoute
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/favorites': typeof FavoritesRoute
   '/fixtures': typeof FixturesRoute
   '/news': typeof NewsRoute
+  '/predict': typeof PredictRoute
   '/privacy': typeof PrivacyRoute
   '/settings': typeof SettingsRoute
   '/standings': typeof StandingsRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/fixtures'
     | '/news'
+    | '/predict'
     | '/privacy'
     | '/settings'
     | '/standings'
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/fixtures'
     | '/news'
+    | '/predict'
     | '/privacy'
     | '/settings'
     | '/standings'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/fixtures'
     | '/news'
+    | '/predict'
     | '/privacy'
     | '/settings'
     | '/standings'
@@ -190,6 +202,7 @@ export interface RootRouteChildren {
   FavoritesRoute: typeof FavoritesRoute
   FixturesRoute: typeof FixturesRoute
   NewsRoute: typeof NewsRoute
+  PredictRoute: typeof PredictRoute
   PrivacyRoute: typeof PrivacyRoute
   SettingsRoute: typeof SettingsRoute
   StandingsRoute: typeof StandingsRoute
@@ -241,6 +254,13 @@ declare module '@tanstack/react-router' {
       path: '/news'
       fullPath: '/news'
       preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/predict': {
+      id: '/predict'
+      path: '/predict'
+      fullPath: '/predict'
+      preLoaderRoute: typeof PredictRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -302,6 +322,7 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritesRoute: FavoritesRoute,
   FixturesRoute: FixturesRoute,
   NewsRoute: NewsRoute,
+  PredictRoute: PredictRoute,
   PrivacyRoute: PrivacyRoute,
   SettingsRoute: SettingsRoute,
   StandingsRoute: StandingsRoute,

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import {
   getRegion,
+  isEmbeddable,
   playableSource,
   regionName,
   sourceLink,
@@ -30,6 +31,7 @@ import {
 } from "@/lib/stream-quality";
 import { useCast } from "@/lib/native/use-cast";
 import { showRewarded } from "@/lib/native/ads";
+import { runAdGate } from "@/lib/native/ad-gate";
 import { openExternal } from "@/lib/native/browser";
 import { cn } from "@/lib/utils";
 
@@ -291,15 +293,23 @@ function HlsVideo({
   );
 }
 
-function SourceRow({ source }: { source: StreamSource }) {
+function SourceRow({
+  source,
+  onPlay,
+}: {
+  source: StreamSource;
+  onPlay?: (source: StreamSource) => void;
+}) {
+  const playable = Boolean(onPlay) && isEmbeddable(source);
+
   return (
     <button
       type="button"
-      onClick={() => openExternal(sourceLink(source))}
+      onClick={() => (playable ? onPlay?.(source) : openExternal(sourceLink(source)))}
       className="flex w-full items-center gap-3 rounded-xl bg-surface-2 px-3 py-2.5 text-left transition-colors hover:bg-surface-2/70"
     >
       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
-        <Tv className="h-4 w-4" />
+        {playable ? <Play className="h-4 w-4 fill-current" /> : <Tv className="h-4 w-4" />}
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5">
@@ -308,9 +318,15 @@ function SourceRow({ source }: { source: StreamSource }) {
             <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-primary" aria-label="Official source" />
           )}
         </span>
-        <span className="block truncate text-xs text-muted-foreground">{source.coverage}</span>
+        <span className="block truncate text-xs text-muted-foreground">
+          {playable ? `${source.coverage} · plays here` : `${source.coverage} · opens on the broadcaster`}
+        </span>
       </span>
-      <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" />
+      {playable ? (
+        <Play className="h-4 w-4 shrink-0 text-primary" />
+      ) : (
+        <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" />
+      )}
     </button>
   );
 }
@@ -318,16 +334,84 @@ function SourceRow({ source }: { source: StreamSource }) {
 export function StreamSourceList({
   sources,
   className,
+  onPlay,
 }: {
   sources: StreamSource[];
   className?: string;
+  onPlay?: (source: StreamSource) => void;
 }) {
   if (sources.length === 0) return null;
   return (
     <div className={cn("space-y-2", className)}>
       {sources.map((s) => (
-        <SourceRow key={s.id} source={s} />
+        <SourceRow key={s.id} source={s} {...(onPlay ? { onPlay } : {})} />
       ))}
+    </div>
+  );
+}
+
+/** Renders the right player for a source: YouTube embed or direct HLS. */
+export function SourcePlayer({ source }: { source: StreamSource }) {
+  if (source.kind === "youtube") {
+    return (
+      <iframe
+        title={`${source.name} live stream`}
+        src={youtubeEmbedUrl(source)}
+        allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+        allowFullScreen
+        className="aspect-video w-full border-0 bg-black"
+      />
+    );
+  }
+  return <HlsVideo url={source.url!} title={source.name} subtitle={source.coverage} />;
+}
+
+/**
+ * Watch tab: a list of sources where the embeddable ones play right here,
+ * after a rewarded ad. Non-embeddable ones still open the broadcaster.
+ */
+export function WatchableSourceList({
+  sources,
+  className,
+}: {
+  sources: StreamSource[];
+  className?: string;
+}) {
+  const [active, setActive] = useState<StreamSource | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function play(source: StreamSource) {
+    setLoading(true);
+    await runAdGate("rewarded");
+    setLoading(false);
+    setActive(source);
+  }
+
+  return (
+    <div className={cn("space-y-3", className)}>
+      {active && (
+        <div className="overflow-hidden rounded-xl ring-1 ring-border">
+          <SourcePlayer source={active} />
+          <div className="flex items-center gap-2 bg-surface-2 px-3 py-2">
+            <span className="min-w-0 flex-1 truncate text-xs font-semibold">{active.name}</span>
+            <button
+              type="button"
+              onClick={() => setActive(null)}
+              className="rounded-full bg-background px-3 py-1 text-[11px] font-bold text-muted-foreground"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {loading && (
+        <p className="flex items-center gap-2 rounded-xl bg-surface-2 px-3 py-2.5 text-xs text-muted-foreground">
+          <Loader2 className="h-3.5 w-3.5 animate-spin" /> Starting the stream…
+        </p>
+      )}
+
+      <StreamSourceList sources={sources} onPlay={play} />
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import {
   getRegion,
+  isEmbeddable,
   playableSource,
   regionName,
   sourceLink,
@@ -30,6 +31,7 @@ import {
 } from "@/lib/stream-quality";
 import { useCast } from "@/lib/native/use-cast";
 import { showRewarded } from "@/lib/native/ads";
+import { runAdGate } from "@/lib/native/ad-gate";
 import { openExternal } from "@/lib/native/browser";
 import { cn } from "@/lib/utils";
 

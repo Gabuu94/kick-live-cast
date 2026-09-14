@@ -6,6 +6,7 @@ export interface Team {
   short: string;
   crest: string; // emoji fallback
   domain: string; // used for real logo lookup (Logo.dev)
+  logo?: string; // direct crest URL from the live data feed
 }
 
 export interface League {

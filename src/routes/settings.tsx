@@ -215,6 +215,101 @@ function SettingsPage() {
   );
 }
 
+/** Device-local list of feeds the user is licensed to play. */
+function MySourcesCard() {
+  const [list, setList] = useState<StreamSource[]>([]);
+  const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
+
+  useEffect(() => setList(customSources()), []);
+
+  function add() {
+    if (!name.trim() || !url.trim()) {
+      toast.error("Add a name and a stream link");
+      return;
+    }
+    try {
+      addCustomSource({ name: name.trim(), url: url.trim() });
+      setList(customSources());
+      setName("");
+      setUrl("");
+      toast.success("Source added", { description: "It now appears in Watch." });
+    } catch {
+      toast.error("That link could not be added");
+    }
+  }
+
+  function remove(id: string) {
+    removeCustomSource(id);
+    setList(customSources());
+  }
+
+  return (
+    <section className="rounded-2xl bg-card ring-1 ring-border">
+      <div className="flex items-center gap-3 border-b border-border p-4">
+        <Link2 className="h-5 w-5 shrink-0 text-primary" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium">My sources</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Paste a stream link you are licensed to watch. It stays on this device only.
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-2 p-4">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name, e.g. My broadcaster"
+          className="w-full rounded-xl bg-surface-2 px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground"
+        />
+        <input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://… .m3u8 or a YouTube link"
+          inputMode="url"
+          className="w-full rounded-xl bg-surface-2 px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground"
+        />
+        <button
+          type="button"
+          onClick={add}
+          className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-primary py-2.5 text-sm font-bold text-primary-foreground"
+        >
+          <Plus className="h-4 w-4" /> Add source
+        </button>
+
+        {list.length > 0 && (
+          <ul className="space-y-2 pt-1">
+            {list.map((s) => (
+              <li key={s.id} className="flex items-center gap-2 rounded-xl bg-surface-2 px-3 py-2">
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold">{s.name}</span>
+                  <span className="block truncate text-[11px] text-muted-foreground">
+                    {s.kind === "youtube" ? "YouTube" : "Direct stream"}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => remove(s.id)}
+                  aria-label={`Remove ${s.name}`}
+                  className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:text-live"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <p className="pt-1 text-[11px] leading-relaxed text-muted-foreground">
+          Only add feeds you have the right to watch. {APP_NAME} never hosts or rebroadcasts
+          anything.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 function OverrideCard({
   scope,
   label,

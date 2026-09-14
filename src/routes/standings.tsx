@@ -57,6 +57,11 @@ function StandingsPage() {
           <span className="text-center">GD</span>
           <span className="text-center">Pts</span>
         </div>
+        {rows.length === 0 && (
+          <p className="p-6 text-center text-sm text-muted-foreground">
+            {isPending ? "Loading table…" : "Table not available for this competition yet."}
+          </p>
+        )}
         {rows.map((r) => (
           <div
             key={r.team.id}

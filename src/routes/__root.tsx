@@ -18,6 +18,8 @@ import { useAdMob } from "../lib/native/use-ads";
 import { hideSplash } from "../lib/native/splash";
 import { Toaster } from "../components/ui/sonner";
 import { FirstRunNotice } from "../components/first-run-notice";
+import { ScoreTicker } from "../components/score-ticker";
+import { useGoalWatcher } from "../lib/live-goals";
 
 function NotFoundComponent() {
   return (
@@ -149,6 +151,7 @@ function RootComponent() {
 
 function AppFrame() {
   useAdMob();
+  useGoalWatcher();
 
   useEffect(() => {
     void hideSplash();
@@ -157,6 +160,7 @@ function AppFrame() {
   return (
     <div className="min-h-screen bg-background">
       <TopBar />
+      <ScoreTicker />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <BottomNav />

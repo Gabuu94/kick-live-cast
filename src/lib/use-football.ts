@@ -18,8 +18,8 @@ export function useMatches() {
   const q = useQuery({
     queryKey: ["matches"],
     queryFn: () => fn(),
-    refetchInterval: 30_000,
-    staleTime: 15_000,
+    refetchInterval: 15_000,
+    staleTime: 8_000,
   });
 
   const data: Match[] = q.data && q.data.length > 0 ? q.data : q.isError ? demoMatches : [];
@@ -31,8 +31,8 @@ export function useMatch(id: string) {
   const q = useQuery({
     queryKey: ["match", id],
     queryFn: () => fn({ data: { id } }),
-    refetchInterval: 20_000,
-    staleTime: 10_000,
+    refetchInterval: 15_000,
+    staleTime: 8_000,
   });
 
   const fallback = demoMatches.find((m) => m.id === id) ?? null;

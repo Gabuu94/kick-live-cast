@@ -1,11 +1,22 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, CalendarDays, Home, Newspaper, PlayCircle, Settings, Star, Trophy } from "lucide-react";
+import {
+  Bell,
+  CalendarDays,
+  Home,
+  Newspaper,
+  PlayCircle,
+  Settings,
+  Sparkles,
+  Star,
+  Trophy,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoMark from "@/assets/logo-mark.png";
 
 const tabs = [
   { to: "/", label: "Live", icon: Home },
   { to: "/watch", label: "Watch", icon: PlayCircle },
+  { to: "/predict", label: "Predict", icon: Sparkles },
   { to: "/fixtures", label: "Fixtures", icon: CalendarDays },
   { to: "/standings", label: "Tables", icon: Trophy },
   { to: "/news", label: "News", icon: Newspaper },

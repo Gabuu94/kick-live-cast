@@ -150,20 +150,20 @@ function toMatch(fx: SmFixture): Match | null {
   const leagueId = REVERSE_LEAGUE[fx.league_id] ?? `sm-${fx.league_id}`;
   const status = statusOf(fx);
 
-  const events: MatchEvent[] = (fx.events ?? [])
-    .map((e) => {
-      const type = EVENT_TYPES[e.type_id];
-      if (!type) return null;
-      return {
-        minute: e.minute,
-        type,
-        team: e.participant_id === home.id ? ("home" as const) : ("away" as const),
-        player: e.player_name ?? "—",
-        detail: e.info ?? undefined,
-      };
-    })
-    .filter((e): e is MatchEvent => e !== null)
-    .sort((a, b) => a.minute - b.minute);
+  const events: MatchEvent[] = [];
+  for (const e of fx.events ?? []) {
+    const type = EVENT_TYPES[e.type_id];
+    if (!type) continue;
+    const ev: MatchEvent = {
+      minute: e.minute,
+      type,
+      team: e.participant_id === home.id ? "home" : "away",
+      player: e.player_name ?? "—",
+    };
+    if (e.info) ev.detail = e.info;
+    events.push(ev);
+  }
+  events.sort((a, b) => a.minute - b.minute);
 
   const stats = STAT_LABELS.map(({ code, label }) => {
     const h = fx.statistics?.find((s) => s.type?.code === code && s.participant_id === home.id);

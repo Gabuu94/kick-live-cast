@@ -18,7 +18,7 @@ export function logoUrl(domain: string, size = 96) {
 export function TeamCrest({ team, size = "md" }: { team: Team; size?: "sm" | "md" }) {
   const [failed, setFailed] = useState(false);
   const px = size === "md" ? 96 : 64;
-  const src = failed ? null : logoUrl(team.domain, px);
+  const src = failed ? null : (team.logo ?? logoUrl(team.domain, px));
 
   return (
     <span

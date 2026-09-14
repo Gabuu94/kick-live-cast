@@ -4,13 +4,8 @@ import { ChevronRight } from "lucide-react";
 import { Page } from "@/components/app-chrome";
 import { MatchCard } from "@/components/match-card";
 import { AdSlot } from "@/components/ad-slot";
-import {
-  finishedMatches,
-  leagues,
-  liveMatches,
-  upcomingMatches,
-  matches,
-} from "@/lib/football-data";
+import { leagues } from "@/lib/football-data";
+import { useMatches } from "@/lib/use-football";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
@@ -38,20 +33,25 @@ function LivePage() {
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const [leagueId, setLeagueId] = useState<string | null>(null);
 
+  const { matches, isPending } = useMatches();
+
   const base =
     filter === "Live"
-      ? liveMatches()
+      ? matches.filter((m) => m.status === "live")
       : filter === "Upcoming"
-        ? upcomingMatches()
+        ? matches.filter((m) => m.status === "upcoming")
         : filter === "Finished"
-          ? finishedMatches()
+          ? matches.filter((m) => m.status === "finished")
           : matches;
 
   const list = leagueId ? base.filter((m) => m.leagueId === leagueId) : base;
-  const live = liveMatches();
+  const live = matches.filter((m) => m.status === "live");
 
   return (
-    <Page title="Live now" subtitle={`${live.length} matches in play`}>
+    <Page
+      title="Live now"
+      subtitle={isPending ? "Loading today's matches…" : `${live.length} matches in play`}
+    >
       <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
         {filters.map((f) => (
           <button
@@ -89,7 +89,7 @@ function LivePage() {
       <div className="space-y-3">
         {list.length === 0 ? (
           <p className="rounded-2xl bg-card p-6 text-center text-sm text-muted-foreground ring-1 ring-border">
-            No matches for this filter.
+            {isPending ? "Loading matches…" : "No matches for this filter."}
           </p>
         ) : (
           list.map((m, i) => (

@@ -3,7 +3,8 @@ import { useState } from "react";
 import { Page } from "@/components/app-chrome";
 import { AdSlot } from "@/components/ad-slot";
 import { TeamCrest } from "@/components/match-card";
-import { leagues, standings } from "@/lib/football-data";
+import { leagues } from "@/lib/football-data";
+import { useStandings } from "@/lib/use-football";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/standings")({
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/standings")({
 
 function StandingsPage() {
   const [leagueId, setLeagueId] = useState("epl");
-  const rows = standings[leagueId] ?? [];
+  const { rows, isPending } = useStandings(leagueId);
 
   return (
     <Page title="Tables" subtitle="Standings and recent form">
@@ -56,6 +57,11 @@ function StandingsPage() {
           <span className="text-center">GD</span>
           <span className="text-center">Pts</span>
         </div>
+        {rows.length === 0 && (
+          <p className="p-6 text-center text-sm text-muted-foreground">
+            {isPending ? "Loading table…" : "Table not available for this competition yet."}
+          </p>
+        )}
         {rows.map((r) => (
           <div
             key={r.team.id}

@@ -3,7 +3,8 @@ import { Radio, ShieldCheck } from "lucide-react";
 import { Page } from "@/components/app-chrome";
 import { AdSlot } from "@/components/ad-slot";
 import { MatchCard } from "@/components/match-card";
-import { CastPanel, StreamSourceList, useRegion } from "@/components/stream-player";
+import { AdGate } from "@/components/ad-gate";
+import { CastPanel, WatchableSourceList, useRegion } from "@/components/stream-player";
 import { REGIONS, regionName, setRegion, sourcesForRegion } from "@/lib/streams";
 import { matches } from "@/lib/football-data";
 import { cn } from "@/lib/utils";
@@ -84,7 +85,7 @@ function WatchPage() {
           <h2 className="font-display text-sm font-bold uppercase tracking-widest text-primary">
             Free in {regionName(region)}
           </h2>
-          <StreamSourceList sources={free} className="mt-3" />
+          <WatchableSourceList sources={free} className="mt-3" />
         </section>
       )}
 
@@ -92,7 +93,7 @@ function WatchPage() {
         <h2 className="font-display text-sm font-bold uppercase tracking-widest text-primary">
           Free worldwide
         </h2>
-        <StreamSourceList sources={worldwide} className="mt-3" />
+        <WatchableSourceList sources={worldwide} className="mt-3" />
       </section>
 
       <section className="rounded-2xl bg-surface-2/60 p-4 text-xs leading-relaxed text-muted-foreground ring-1 ring-border">

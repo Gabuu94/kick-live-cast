@@ -89,7 +89,7 @@ function LivePage() {
       <div className="space-y-3">
         {list.length === 0 ? (
           <p className="rounded-2xl bg-card p-6 text-center text-sm text-muted-foreground ring-1 ring-border">
-            No matches for this filter.
+            {isPending ? "Loading matches…" : "No matches for this filter."}
           </p>
         ) : (
           list.map((m, i) => (

@@ -33,20 +33,25 @@ function LivePage() {
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const [leagueId, setLeagueId] = useState<string | null>(null);
 
+  const { matches, isPending } = useMatches();
+
   const base =
     filter === "Live"
-      ? liveMatches()
+      ? matches.filter((m) => m.status === "live")
       : filter === "Upcoming"
-        ? upcomingMatches()
+        ? matches.filter((m) => m.status === "upcoming")
         : filter === "Finished"
-          ? finishedMatches()
+          ? matches.filter((m) => m.status === "finished")
           : matches;
 
   const list = leagueId ? base.filter((m) => m.leagueId === leagueId) : base;
-  const live = liveMatches();
+  const live = matches.filter((m) => m.status === "live");
 
   return (
-    <Page title="Live now" subtitle={`${live.length} matches in play`}>
+    <Page
+      title="Live now"
+      subtitle={isPending ? "Loading today's matches…" : `${live.length} matches in play`}
+    >
       <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
         {filters.map((f) => (
           <button

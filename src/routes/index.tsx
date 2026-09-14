@@ -4,13 +4,8 @@ import { ChevronRight } from "lucide-react";
 import { Page } from "@/components/app-chrome";
 import { MatchCard } from "@/components/match-card";
 import { AdSlot } from "@/components/ad-slot";
-import {
-  finishedMatches,
-  leagues,
-  liveMatches,
-  upcomingMatches,
-  matches,
-} from "@/lib/football-data";
+import { leagues } from "@/lib/football-data";
+import { useMatches } from "@/lib/use-football";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({

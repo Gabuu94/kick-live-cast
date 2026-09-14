@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Page } from "@/components/app-chrome";
 import { MatchCard } from "@/components/match-card";
 import { AdSlot } from "@/components/ad-slot";
-import { formatDay, matches } from "@/lib/football-data";
+import { formatDay, type Match } from "@/lib/football-data";
+import { useMatches } from "@/lib/use-football";
 
 export const Route = createFileRoute("/fixtures")({
   head: () => ({

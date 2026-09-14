@@ -1,14 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Bell,
   ChevronDown,
   FileText,
   Info,
+  Link2,
   Lock,
+  Plus,
   RotateCcw,
   ShieldCheck,
   Star,
+  Trash2,
   Trophy,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -28,6 +31,12 @@ import {
   type PartialScopePrefs,
   type ScopePrefs,
 } from "@/lib/push/prefs";
+import {
+  addCustomSource,
+  customSources,
+  removeCustomSource,
+  type StreamSource,
+} from "@/lib/streams";
 import { APP_NAME, versionLabel } from "@/lib/app-info";
 import { cn } from "@/lib/utils";
 

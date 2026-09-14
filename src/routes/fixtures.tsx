@@ -25,11 +25,13 @@ export const Route = createFileRoute("/fixtures")({
 });
 
 function FixturesPage() {
+  const { matches, isPending } = useMatches();
+
   const sorted = [...matches].sort(
     (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime(),
   );
 
-  const groups = sorted.reduce<Record<string, typeof matches>>((acc, m) => {
+  const groups = sorted.reduce<Record<string, Match[]>>((acc, m) => {
     const key = formatDay(m.kickoff);
     (acc[key] ||= []).push(m);
     return acc;
@@ -38,6 +40,11 @@ function FixturesPage() {
   return (
     <Page title="Fixtures" subtitle="All matches by day">
       <AdSlot />
+      {isPending && (
+        <p className="rounded-2xl bg-card p-6 text-center text-sm text-muted-foreground ring-1 ring-border">
+          Loading fixtures…
+        </p>
+      )}
       {Object.entries(groups).map(([day, list]) => (
         <section key={day} className="space-y-3">
           <h2 className="font-display text-sm font-bold uppercase tracking-widest text-primary">

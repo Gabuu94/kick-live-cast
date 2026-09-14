@@ -333,7 +333,7 @@ function availableIn(source: StreamSource, region: string): boolean {
 
 /** Sources for a region, worldwide ones last. */
 export function sourcesForRegion(region: string): StreamSource[] {
-  return STREAM_SOURCES.filter((s) => availableIn(s, region)).sort((a, b) => {
+  return allSources().filter((s) => availableIn(s, region)).sort((a, b) => {
     const aLocal = a.regions.includes(region) ? 0 : 1;
     const bLocal = b.regions.includes(region) ? 0 : 1;
     return aLocal - bLocal;

@@ -3,7 +3,8 @@ import { useState } from "react";
 import { Page } from "@/components/app-chrome";
 import { AdSlot } from "@/components/ad-slot";
 import { TeamCrest } from "@/components/match-card";
-import { leagues, standings } from "@/lib/football-data";
+import { leagues } from "@/lib/football-data";
+import { useStandings } from "@/lib/use-football";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/standings")({

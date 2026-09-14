@@ -101,14 +101,15 @@ function statusOf(fx: SmFixture): MatchStatus {
 }
 
 function toTeam(p: SmParticipant): Team {
-  return {
+  const team: Team = {
     id: String(p.id),
     name: p.name,
     short: p.short_code ?? p.name.slice(0, 3).toUpperCase(),
     crest: "⚽",
     domain: "",
-    logo: p.image_path,
   };
+  if (p.image_path) team.logo = p.image_path;
+  return team;
 }
 
 function currentScore(fx: SmFixture, side: "home" | "away"): number | null {

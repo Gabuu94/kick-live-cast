@@ -28,7 +28,7 @@ export const Route = createFileRoute("/standings")({
 
 function StandingsPage() {
   const [leagueId, setLeagueId] = useState("epl");
-  const rows = standings[leagueId] ?? [];
+  const { rows, isPending } = useStandings(leagueId);
 
   return (
     <Page title="Tables" subtitle="Standings and recent form">

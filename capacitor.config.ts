@@ -13,6 +13,15 @@ const config: CapacitorConfig = {
   appId: "com.footballlivetv.app",
   appName: "Football Live TV",
   webDir: "dist/client",
+  /**
+   * This app is server-rendered, so the native shell loads the published site.
+   * Native plugins (AdMob, push, share, splash) still run natively.
+   */
+  server: {
+    url: "https://livefootball.dev",
+    cleartext: false,
+    androidScheme: "https",
+  },
   android: {
     allowMixedContent: false,
   },

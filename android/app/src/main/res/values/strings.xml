@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Football Live TV</string>
+    <string name="title_activity_main">Football Live TV</string>
+    <string name="package_name">com.footballlivetv.app</string>
+    <string name="custom_url_scheme">com.footballlivetv.app</string>
+</resources>

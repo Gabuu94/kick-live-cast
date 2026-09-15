@@ -22,21 +22,21 @@ step you must do once. Work top to bottom.
 
 ## 2. Before you upload — code steps
 
-1. **Replace the AdMob test IDs.** They are Google test units today. Create your
-   units in AdMob and set build-time env vars:
+1. **AdMob IDs are already real.** Your `.env.production` already has the live
+   units you created:
    ```
-   VITE_ADMOB_BANNER_ID=ca-app-pub-XXXX/YYYY
-   VITE_ADMOB_INTERSTITIAL_ID=ca-app-pub-XXXX/YYYY
-   VITE_ADMOB_REWARDED_ID=ca-app-pub-XXXX/YYYY
+   VITE_ADMOB_BANNER_ID=ca-app-pub-2683576802120823/6097625127
+   VITE_ADMOB_INTERSTITIAL_ID=ca-app-pub-2683576802120823/6257407222
+   VITE_ADMOB_REWARDED_ID=ca-app-pub-2683576802120823/3735632771
    VITE_ADMOB_TESTING=false
    ```
    Shipping test ads to production, or clicking your own live ads, gets the
    AdMob account suspended.
-2. **Add the AdMob app ID to `android/app/src/main/AndroidManifest.xml`:**
+2. **AdMob app ID is already in `android/app/src/main/AndroidManifest.xml`:**
    ```xml
    <meta-data
      android:name="com.google.android.gms.ads.APPLICATION_ID"
-     android:value="ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY"/>
+     android:value="ca-app-pub-2683576802120823~9075142252"/>
    ```
    Missing this crashes the app on launch.
 3. **Configure a GDPR message in AdMob** (Privacy & messaging → European

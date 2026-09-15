@@ -24,13 +24,24 @@ export async function ensureConsent(): Promise<void> {
   if (!isNative()) return;
   if (inFlight) return inFlight;
 
+  const withTimeout = <T,>(p: Promise<T>, ms: number): Promise<T | undefined> =>
+    Promise.race([p, new Promise<undefined>((r) => setTimeout(() => r(undefined), ms))]);
+
   inFlight = (async () => {
     try {
       const { AdMob } = await admob();
-      const info = await AdMob.requestConsentInfo({
-        // Set to true if the app is ever targeted at children.
-        tagForUnderAgeOfConsent: false,
-      });
+      // Never let the consent SDK hang the whole ad pipeline.
+      const info = await withTimeout(
+        AdMob.requestConsentInfo({
+          // Set to true if the app is ever targeted at children.
+          tagForUnderAgeOfConsent: false,
+        }),
+        8000,
+      );
+      if (!info) {
+        console.warn("UMP consent timed out — continuing without it");
+        return;
+      }
       lastInfo = {
         status: info.status as ConsentStatus,
         isConsentFormAvailable: Boolean(info.isConsentFormAvailable),

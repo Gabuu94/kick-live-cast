@@ -29,6 +29,7 @@ export async function initAds(): Promise<void> {
   // Google Play / AdMob policy: collect UMP consent before requesting ads.
   await ensureConsent();
   const { AdMob } = await admob();
+  console.log("[ads] initialize", { testing: TESTING, banner: ADMOB_UNITS.banner });
   await AdMob.initialize({ initializeForTesting: TESTING });
   initialized = true;
 }
@@ -38,14 +39,21 @@ export async function showBanner(): Promise<void> {
   if (!isNative() || bannerVisible) return;
   await initAds();
   const { AdMob, BannerAdSize, BannerAdPosition } = await admob();
-  await AdMob.showBanner({
-    adId: ADMOB_UNITS.banner,
-    adSize: BannerAdSize.ADAPTIVE_BANNER,
-    position: BannerAdPosition.BOTTOM_CENTER,
-    margin: 56, // sit above the bottom tab bar
-    isTesting: TESTING,
-  });
-  bannerVisible = true;
+  try {
+    await AdMob.showBanner({
+      adId: ADMOB_UNITS.banner,
+      adSize: BannerAdSize.ADAPTIVE_BANNER,
+      position: BannerAdPosition.BOTTOM_CENTER,
+      margin: 56, // sit above the bottom tab bar
+      isTesting: TESTING,
+    });
+    bannerVisible = true;
+    console.log("[ads] banner shown");
+  } catch (err) {
+    bannerVisible = false;
+    console.warn("[ads] banner failed", err);
+    throw err;
+  }
 }
 
 export async function hideBanner(): Promise<void> {

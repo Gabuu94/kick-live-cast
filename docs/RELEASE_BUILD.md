@@ -16,12 +16,12 @@ npm install
 
 ## 2. Point the build at your real AdMob units
 
-Create `.env.production` in the project root:
+Your real units are already in `.env.production`. It should look like this:
 
 ```bash
-VITE_ADMOB_BANNER_ID=ca-app-pub-XXXXXXXXXXXXXXXX/1111111111
-VITE_ADMOB_INTERSTITIAL_ID=ca-app-pub-XXXXXXXXXXXXXXXX/2222222222
-VITE_ADMOB_REWARDED_ID=ca-app-pub-XXXXXXXXXXXXXXXX/3333333333
+VITE_ADMOB_BANNER_ID=ca-app-pub-2683576802120823/6097625127
+VITE_ADMOB_INTERSTITIAL_ID=ca-app-pub-2683576802120823/6257407222
+VITE_ADMOB_REWARDED_ID=ca-app-pub-2683576802120823/3735632771
 VITE_ADMOB_TESTING=false
 ```
 
@@ -49,7 +49,7 @@ Then edit `android/app/src/main/AndroidManifest.xml`:
 <!-- inside <application> — the app crashes on launch without this -->
 <meta-data
     android:name="com.google.android.gms.ads.APPLICATION_ID"
-    android:value="ca-app-pub-XXXXXXXXXXXXXXXX~4444444444"/>
+    android:value="ca-app-pub-2683576802120823~9075142252"/>
 
 <!-- inside the main <activity>, alongside the existing intent filters -->
 <intent-filter android:autoVerify="false">

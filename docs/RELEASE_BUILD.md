@@ -67,7 +67,7 @@ Confirm the permission list is only:
 
 Push notifications also need `android/app/google-services.json` from your
 Firebase project (Project settings → Your apps → Android, package
-`com.footballlivetv.app`).
+`com.footballlivetvscores.app`).
 
 ## 4. Create the upload keystore (once — then back it up)
 

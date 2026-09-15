@@ -1,4 +1,4 @@
-package com.footballlivetv.app;
+package com.footballlivetvscores.app;
 
 import com.getcapacitor.BridgeActivity;
 

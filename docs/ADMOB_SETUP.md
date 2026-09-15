@@ -7,7 +7,7 @@
 | AdMob App ID (Android) | `ca-app-pub-2683576802120823~9075142252` |
 | Banner unit | `ca-app-pub-2683576802120823/6097625127` |
 | Interstitial unit | `ca-app-pub-2683576802120823/6257407222` |
-| Rewarded unit | not created yet — still using Google's test unit |
+| Rewarded unit | `ca-app-pub-2683576802120823/3735632771` |
 
 ## 1. App ID in the Android project
 
@@ -28,8 +28,7 @@ automatically, and `VITE_ADMOB_TESTING=false` turns off test mode.
 
 ## 3. Still to do
 
-Create a **Rewarded** ad unit in AdMob (used by the "Watch live" button),
-then uncomment `VITE_ADMOB_REWARDED_ID` in `.env.production` and paste the id.
+All three ad units are created and wired into `.env.production`.
 
 ## 4. Warning
 

@@ -49,7 +49,7 @@ Then edit `android/app/src/main/AndroidManifest.xml`:
 <!-- inside <application> — the app crashes on launch without this -->
 <meta-data
     android:name="com.google.android.gms.ads.APPLICATION_ID"
-    android:value="ca-app-pub-XXXXXXXXXXXXXXXX~4444444444"/>
+    android:value="ca-app-pub-2683576802120823~9075142252"/>
 
 <!-- inside the main <activity>, alongside the existing intent filters -->
 <intent-filter android:autoVerify="false">

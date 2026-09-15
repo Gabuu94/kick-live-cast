@@ -10,7 +10,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
  *   `npx cap sync android && npx cap open android`.
  */
 const config: CapacitorConfig = {
-  appId: "com.footballlivetv.app",
+  appId: "com.footballlivetvscores.app",
   appName: "Football Live TV",
   webDir: "dist/client",
   /**

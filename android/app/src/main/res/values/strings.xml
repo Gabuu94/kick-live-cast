@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Football Live TV</string>
     <string name="title_activity_main">Football Live TV</string>
-    <string name="package_name">com.footballlivetv.app</string>
-    <string name="custom_url_scheme">com.footballlivetv.app</string>
+    <string name="package_name">com.footballlivetvscores.app</string>
+    <string name="custom_url_scheme">com.footballlivetvscores.app</string>
 </resources>

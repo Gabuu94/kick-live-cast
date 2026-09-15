@@ -8,7 +8,7 @@
 export const APP_NAME = "Football Live TV";
 export const APP_VERSION = "1.0.0";
 export const APP_BUILD = 1;
-export const APP_PACKAGE_ID = "com.footballlivetv.app";
+export const APP_PACKAGE_ID = "com.footballlivetvscores.app";
 export const DEEP_LINK_SCHEME = "footballlivetv";
 export const SUPPORT_EMAIL = "support@footballlivetv.app";
 export const LAST_UPDATED = "25 August 2026";

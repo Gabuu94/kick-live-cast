@@ -31,10 +31,17 @@ export async function ensureConsent(): Promise<void> {
     try {
       const { AdMob } = await admob();
       // Never let the consent SDK hang the whole ad pipeline.
-      const info = await withTimeout(AdMob.requestConsentInfo({
-        // Set to true if the app is ever targeted at children.
-        tagForUnderAgeOfConsent: false,
-      });
+      const info = await withTimeout(
+        AdMob.requestConsentInfo({
+          // Set to true if the app is ever targeted at children.
+          tagForUnderAgeOfConsent: false,
+        }),
+        8000,
+      );
+      if (!info) {
+        console.warn("UMP consent timed out — continuing without it");
+        return;
+      }
       lastInfo = {
         status: info.status as ConsentStatus,
         isConsentFormAvailable: Boolean(info.isConsentFormAvailable),

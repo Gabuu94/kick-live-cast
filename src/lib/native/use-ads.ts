@@ -17,7 +17,15 @@ export function useAdMob() {
     (async () => {
       await initAds();
       if (cancelled) return;
-      await showBanner();
+      // A first banner request can fail while the SDK is still warming up.
+      for (let attempt = 0; attempt < 3 && !cancelled; attempt += 1) {
+        try {
+          await showBanner();
+          break;
+        } catch {
+          await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+        }
+      }
       void prepareInterstitial();
     })().catch((err) => console.warn("AdMob init failed", err));
 

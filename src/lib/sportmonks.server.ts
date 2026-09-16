@@ -295,9 +295,14 @@ export async function fetchMatches(): Promise<Match[]> {
     byId.set(m.id, m); // in-play data wins on conflict
   }
 
-  return Array.from(byId.values()).sort(
-    (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime(),
-  );
+  // Live matches first, then what's coming up, then results.
+  const rank = { live: 0, upcoming: 1, finished: 2 } as const;
+  return Array.from(byId.values()).sort((a, b) => {
+    if (rank[a.status] !== rank[b.status]) return rank[a.status] - rank[b.status];
+    const ka = new Date(a.kickoff).getTime();
+    const kb = new Date(b.kickoff).getTime();
+    return a.status === "finished" ? kb - ka : ka - kb;
+  });
 }
 
 export async function fetchMatch(id: string): Promise<Match | null> {

@@ -10,9 +10,8 @@ import { maybeShowInterstitial, showRewarded } from "./ads";
  *  - a failed or unavailable ad always lets the content through.
  */
 
-const MIN_GAP_MS = 60_000;
+const MIN_GAP_MS = 45_000;
 let lastAdAt = 0;
-let firstInteractionDone = false;
 
 export type AdGateKind = "rewarded" | "interstitial";
 
@@ -20,10 +19,6 @@ export type AdGateKind = "rewarded" | "interstitial";
 export async function runAdGate(kind: AdGateKind = "interstitial"): Promise<boolean> {
   if (!isNative()) return false; // web preview: straight to the content
 
-  if (!firstInteractionDone) {
-    firstInteractionDone = true;
-    return false;
-  }
   if (Date.now() - lastAdAt < MIN_GAP_MS) return false;
 
   try {
@@ -44,5 +39,4 @@ export async function runAdGate(kind: AdGateKind = "interstitial"): Promise<bool
 /** Test hook: forget the frequency cap. */
 export function resetAdGate(): void {
   lastAdAt = 0;
-  firstInteractionDone = false;
 }

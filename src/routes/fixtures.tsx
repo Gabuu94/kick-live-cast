@@ -3,9 +3,11 @@ import { Page } from "@/components/app-chrome";
 import { MatchCard } from "@/components/match-card";
 import { AdSlot } from "@/components/ad-slot";
 import { formatDay, type Match } from "@/lib/football-data";
-import { useMatches } from "@/lib/use-football";
+import { matchesQueryOptions, useMatches } from "@/lib/use-football";
 
 export const Route = createFileRoute("/fixtures")({
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(matchesQueryOptions()).catch(() => null),
   head: () => ({
     meta: [
       { title: "Football Fixtures & Kick-off Times — Football Live TV" },

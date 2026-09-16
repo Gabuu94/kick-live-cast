@@ -87,7 +87,7 @@ function LivePage() {
         <Chip active={leagueId === null} onClick={() => setLeagueId(null)}>
           All leagues
         </Chip>
-        {leagues.map((l) => (
+        {chipLeagues.map((l) => (
           <Chip
             key={l.id}
             active={leagueId === l.id}

@@ -306,6 +306,8 @@ export async function fetchMatches(): Promise<Match[]> {
 }
 
 export async function fetchMatch(id: string): Promise<Match | null> {
+  // Demo/fallback ids (e.g. "m2") are not SportMonks fixture ids.
+  if (!/^\d+$/.test(id)) return null;
   const data = await api<SmFixture>(`/fixtures/${id}`, { include: DETAIL_INCLUDE }, 15_000);
   return data ? toMatch(data) : null;
 }

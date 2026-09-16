@@ -260,26 +260,41 @@ const LIST_INCLUDE = "participants;scores;state;league;venue;periods";
 const DETAIL_INCLUDE = `${LIST_INCLUDE};events;statistics.type;tvstations.tvstation`;
 const LEAGUE_FILTER = Object.values(LEAGUE_MAP).join(",");
 
+/** Anything kicking off in this window is listed. */
 export async function fetchMatches(): Promise<Match[]> {
   const now = Date.now();
   const from = ymd(new Date(now - 36 * 3600_000));
   const to = ymd(new Date(now + 72 * 3600_000));
 
-  const data = await api<SmFixture[]>(
-    `/fixtures/between/${from}/${to}`,
-    {
-      include: LIST_INCLUDE,
-      filters: `fixtureLeagues:${LEAGUE_FILTER}`,
-      per_page: "100",
-      order: "starting_at",
-    },
-    20_000,
-  );
+  // Scheduled/finished fixtures for the tracked competitions, plus every match
+  // currently in play across the whole feed so a live game is never missing.
+  const [scheduled, inplay] = await Promise.all([
+    apiPaged<SmFixture>(
+      `/fixtures/between/${from}/${to}`,
+      {
+        include: LIST_INCLUDE,
+        filters: `fixtureLeagues:${LEAGUE_FILTER}`,
+        per_page: "100",
+        order: "starting_at",
+      },
+      20_000,
+      5,
+    ),
+    api<SmFixture[]>(`/livescores/inplay`, { include: LIST_INCLUDE }, 10_000).catch(
+      () => [] as SmFixture[],
+    ),
+  ]);
 
-  return data
-    .map(toMatch)
-    .filter((m): m is Match => m !== null)
-    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+  const byId = new Map<string, Match>();
+  for (const fx of [...scheduled, ...inplay]) {
+    const m = toMatch(fx);
+    if (!m) continue;
+    byId.set(m.id, m); // in-play data wins on conflict
+  }
+
+  return Array.from(byId.values()).sort(
+    (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime(),
+  );
 }
 
 export async function fetchMatch(id: string): Promise<Match | null> {

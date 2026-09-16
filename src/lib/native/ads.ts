@@ -11,6 +11,9 @@ export const ADMOB_UNITS = {
     import.meta.env["VITE_ADMOB_BANNER_ID"] ?? "ca-app-pub-3940256099942544/6300978111",
   interstitial:
     import.meta.env["VITE_ADMOB_INTERSTITIAL_ID"] ?? "ca-app-pub-3940256099942544/1033173712",
+  rewardedInterstitial:
+    import.meta.env["VITE_ADMOB_REWARDED_INTERSTITIAL_ID"] ??
+    "ca-app-pub-3940256099942544/5354046379",
 };
 
 const TESTING = import.meta.env["VITE_ADMOB_TESTING"] !== "false";

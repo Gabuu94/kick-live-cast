@@ -78,7 +78,7 @@ export async function prepareInterstitial(): Promise<void> {
  * Shows an interstitial, then preloads the next one.
  * Frequency-capped so users are not hit on every navigation.
  */
-const INTERSTITIAL_MIN_GAP_MS = 3 * 60 * 1000;
+const INTERSTITIAL_MIN_GAP_MS = 45 * 1000;
 let lastInterstitialAt = 0;
 let navCount = 0;
 

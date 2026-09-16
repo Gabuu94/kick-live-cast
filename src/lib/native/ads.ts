@@ -11,6 +11,9 @@ export const ADMOB_UNITS = {
     import.meta.env["VITE_ADMOB_BANNER_ID"] ?? "ca-app-pub-3940256099942544/6300978111",
   interstitial:
     import.meta.env["VITE_ADMOB_INTERSTITIAL_ID"] ?? "ca-app-pub-3940256099942544/1033173712",
+  rewardedInterstitial:
+    import.meta.env["VITE_ADMOB_REWARDED_INTERSTITIAL_ID"] ??
+    "ca-app-pub-3940256099942544/5354046379",
 };
 
 const TESTING = import.meta.env["VITE_ADMOB_TESTING"] !== "false";
@@ -75,7 +78,7 @@ export async function prepareInterstitial(): Promise<void> {
  * Shows an interstitial, then preloads the next one.
  * Frequency-capped so users are not hit on every navigation.
  */
-const INTERSTITIAL_MIN_GAP_MS = 3 * 60 * 1000;
+const INTERSTITIAL_MIN_GAP_MS = 45 * 1000;
 let lastInterstitialAt = 0;
 let navCount = 0;
 
@@ -131,5 +134,32 @@ export async function showRewarded(): Promise<boolean> {
     console.warn("Rewarded ad failed", err);
     rewardedReady = false;
     return false;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* App-open style launch ad                                            */
+/* ------------------------------------------------------------------ */
+
+let launchAdShown = false;
+
+/**
+ * Full-screen ad shown once, shortly after the app is opened.
+ * Ignores the navigation frequency cap (it is a single launch impression)
+ * but never blocks the UI: any failure is swallowed.
+ */
+export async function showLaunchInterstitial(): Promise<void> {
+  if (!isNative() || launchAdShown) return;
+  launchAdShown = true;
+  try {
+    await prepareInterstitial();
+    const { AdMob } = await admob();
+    await AdMob.showInterstitial();
+    lastInterstitialAt = Date.now();
+    interstitialReady = false;
+    void prepareInterstitial();
+    console.log("[ads] launch interstitial shown");
+  } catch (err) {
+    console.warn("[ads] launch interstitial failed", err);
   }
 }

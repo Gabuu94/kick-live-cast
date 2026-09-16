@@ -9,10 +9,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- AdMob application ID (LIVE FOOTBALLL, Android). Removing this crashes the app on launch. -->
+        <!-- AdMob application ID (Football Live TV, Android). Removing this crashes the app on launch. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-2683576802120823~9075142252" />
+            android:value="ca-app-pub-5118856418936874~9292290757" />
 
         <!-- Push notification icon + colour -->
         <meta-data

@@ -1,11 +1,21 @@
 import { useEffect } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { isNative } from "./platform";
-import { hideBanner, initAds, maybeShowInterstitial, prepareInterstitial, showBanner } from "./ads";
+import {
+  hideBanner,
+  initAds,
+  prepareInterstitial,
+  showBanner,
+  showLaunchInterstitial,
+} from "./ads";
+import { runAdGate } from "./ad-gate";
 
 /**
- * Mounts the anchored AdMob banner on the native build and shows an
- * interstitial every few screen changes. No-op in the browser.
+ * Native ad orchestration:
+ *  - anchored banner on every screen,
+ *  - one full-screen ad shortly after the app opens,
+ *  - a full-screen ad when the user moves to another section (rate-limited).
+ * No-op in the browser.
  */
 export function useAdMob() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -27,6 +37,10 @@ export function useAdMob() {
         }
       }
       void prepareInterstitial();
+      // Launch ad: give the first screen a moment to paint, then show it.
+      setTimeout(() => {
+        if (!cancelled) void showLaunchInterstitial();
+      }, 1200);
     })().catch((err) => console.warn("AdMob init failed", err));
 
     return () => {
@@ -37,8 +51,8 @@ export function useAdMob() {
 
   useEffect(() => {
     if (!isNative()) return;
-    // Interstitials only between content screens, never on first paint.
-    if (pathname === "/") return;
-    void maybeShowInterstitial(3);
+    // Section switches get a full-screen ad, capped to one every 45 seconds
+    // so the launch ad and the Watch/Predict gates never stack up.
+    void runAdGate("interstitial");
   }, [pathname]);
 }

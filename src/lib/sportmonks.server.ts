@@ -235,6 +235,7 @@ function toMatch(fx: SmFixture): Match | null {
   const match: Match = {
     id: String(fx.id),
     leagueId,
+    ...(fx.league?.name ? { leagueName: fx.league.name } : {}),
     home: toTeam(home),
     away: toTeam(away),
     homeScore: status === "upcoming" ? null : (currentScore(fx, "home") ?? 0),

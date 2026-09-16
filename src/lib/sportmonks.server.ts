@@ -61,6 +61,44 @@ async function api<T>(path: string, params: Record<string, string>, ttlMs: numbe
   return json.data;
 }
 
+/** Same as `api`, but follows pagination up to `maxPages`. */
+async function apiPaged<T>(
+  path: string,
+  params: Record<string, string>,
+  ttlMs: number,
+  maxPages = 5,
+): Promise<T[]> {
+  const token = process.env["SPORTMONKS_API_TOKEN"];
+  if (!token) throw new Error("SPORTMONKS_API_TOKEN is not configured");
+
+  const key = `paged:${path}?${new URLSearchParams(params).toString()}`;
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < ttlMs) return hit.value as T[];
+
+  const out: T[] = [];
+  let page = 1;
+  while (page <= maxPages) {
+    const qs = new URLSearchParams({ ...params, page: String(page), api_token: token });
+    const res = await fetch(`${BASE}${path}?${qs.toString()}`, {
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) {
+      if (out.length > 0) break;
+      throw new Error(`SportMonks ${res.status}: ${await res.text().catch(() => "")}`);
+    }
+    const json = (await res.json()) as {
+      data: T[];
+      pagination?: { has_more?: boolean };
+    };
+    out.push(...(json.data ?? []));
+    if (!json.pagination?.has_more) break;
+    page += 1;
+  }
+
+  cache.set(key, { at: Date.now(), value: out });
+  return out;
+}
+
 /* ------------------------------- mapping -------------------------------- */
 
 interface SmParticipant {

@@ -27,6 +27,7 @@ export interface MatchEvent {
 export interface Match {
   id: string;
   leagueId: string;
+  leagueName?: string;
   home: Team;
   away: Team;
   homeScore: number | null;
@@ -98,9 +99,27 @@ export const leagues: League[] = [
   { id: "epl", name: "Premier League", country: "England", badge: "🏴" },
   { id: "lal", name: "LaLiga", country: "Spain", badge: "🇪🇸" },
   { id: "ucl", name: "Champions League", country: "Europe", badge: "🏆" },
+  { id: "uel", name: "Europa League", country: "Europe", badge: "🏆" },
+  { id: "uecl", name: "Conference League", country: "Europe", badge: "🏆" },
   { id: "bun", name: "Bundesliga", country: "Germany", badge: "🇩🇪" },
   { id: "sea", name: "Serie A", country: "Italy", badge: "🇮🇹" },
   { id: "lig", name: "Ligue 1", country: "France", badge: "🇫🇷" },
+  { id: "ere", name: "Eredivisie", country: "Netherlands", badge: "🇳🇱" },
+  { id: "efl", name: "Carabao Cup", country: "England", badge: "🏴" },
+  { id: "fac", name: "FA Cup", country: "England", badge: "🏴" },
+  { id: "cha", name: "Championship", country: "England", badge: "🏴" },
+  { id: "cdr", name: "Copa del Rey", country: "Spain", badge: "🇪🇸" },
+  { id: "cit", name: "Coppa Italia", country: "Italy", badge: "🇮🇹" },
+  { id: "dfb", name: "DFB Pokal", country: "Germany", badge: "🇩🇪" },
+  { id: "spl", name: "Scottish Premiership", country: "Scotland", badge: "🏴" },
+  { id: "bel", name: "Belgian Pro League", country: "Belgium", badge: "🇧🇪" },
+  { id: "tur", name: "Süper Lig", country: "Türkiye", badge: "🇹🇷" },
+  { id: "mls", name: "MLS", country: "USA", badge: "🇺🇸" },
+  { id: "bra", name: "Brasileirão", country: "Brazil", badge: "🇧🇷" },
+  { id: "arg", name: "Liga Profesional", country: "Argentina", badge: "🇦🇷" },
+  { id: "afc", name: "Africa Cup of Nations", country: "Africa", badge: "🌍" },
+  { id: "wcq", name: "World Cup Qualifiers", country: "Africa", badge: "🌍" },
+  { id: "unl", name: "Nations League", country: "Europe", badge: "🏆" },
 ];
 
 const iso = (hoursFromNow: number) =>

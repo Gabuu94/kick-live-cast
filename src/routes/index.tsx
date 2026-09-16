@@ -5,10 +5,12 @@ import { Page } from "@/components/app-chrome";
 import { MatchCard } from "@/components/match-card";
 import { AdSlot } from "@/components/ad-slot";
 import { leagues } from "@/lib/football-data";
-import { useMatches } from "@/lib/use-football";
+import { matchesQueryOptions, useMatches } from "@/lib/use-football";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(matchesQueryOptions()).catch(() => null),
   head: () => ({
     meta: [
       { title: "Live Football Scores Today — Football Live TV" },

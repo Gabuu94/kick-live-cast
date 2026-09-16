@@ -4,10 +4,12 @@ import { Page } from "@/components/app-chrome";
 import { AdSlot } from "@/components/ad-slot";
 import { TeamCrest } from "@/components/match-card";
 import { leagues } from "@/lib/football-data";
-import { useStandings } from "@/lib/use-football";
+import { standingsQueryOptions, useStandings } from "@/lib/use-football";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/standings")({
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(standingsQueryOptions("epl")).catch(() => null),
   head: () => ({
     meta: [
       { title: "League Tables & Standings — Football Live TV" },

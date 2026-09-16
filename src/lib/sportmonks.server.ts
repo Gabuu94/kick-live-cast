@@ -266,8 +266,8 @@ const LEAGUE_FILTER = Object.values(LEAGUE_MAP).join(",");
 /** Anything kicking off in this window is listed. */
 export async function fetchMatches(): Promise<Match[]> {
   const now = Date.now();
-  const from = ymd(new Date(now - 36 * 3600_000));
-  const to = ymd(new Date(now + 72 * 3600_000));
+  const from = ymd(new Date(now - 48 * 3600_000));
+  const to = ymd(new Date(now + 7 * 24 * 3600_000));
 
   // Scheduled/finished fixtures for the tracked competitions, plus every match
   // currently in play across the whole feed so a live game is never missing.
@@ -281,7 +281,7 @@ export async function fetchMatches(): Promise<Match[]> {
         order: "starting_at",
       },
       20_000,
-      5,
+      10,
     ),
     api<SmFixture[]>(`/livescores/inplay`, { include: LIST_INCLUDE }, 10_000).catch(
       () => [] as SmFixture[],

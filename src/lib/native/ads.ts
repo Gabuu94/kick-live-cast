@@ -136,3 +136,30 @@ export async function showRewarded(): Promise<boolean> {
     return false;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* App-open style launch ad                                            */
+/* ------------------------------------------------------------------ */
+
+let launchAdShown = false;
+
+/**
+ * Full-screen ad shown once, shortly after the app is opened.
+ * Ignores the navigation frequency cap (it is a single launch impression)
+ * but never blocks the UI: any failure is swallowed.
+ */
+export async function showLaunchInterstitial(): Promise<void> {
+  if (!isNative() || launchAdShown) return;
+  launchAdShown = true;
+  try {
+    await prepareInterstitial();
+    const { AdMob } = await admob();
+    await AdMob.showInterstitial();
+    lastInterstitialAt = Date.now();
+    interstitialReady = false;
+    void prepareInterstitial();
+    console.log("[ads] launch interstitial shown");
+  } catch (err) {
+    console.warn("[ads] launch interstitial failed", err);
+  }
+}

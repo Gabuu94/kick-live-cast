@@ -52,7 +52,7 @@ function MatchPage() {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <span className="flex-1 truncate">
-            {league?.badge} {league?.name}
+            {league?.badge ?? "⚽"} {league?.name ?? match.leagueName ?? "Football"}
           </span>
           <button
             type="button"

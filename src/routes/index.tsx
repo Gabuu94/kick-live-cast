@@ -49,6 +49,18 @@ function LivePage() {
   const list = leagueId ? base.filter((m) => m.leagueId === leagueId) : base;
   const live = matches.filter((m) => m.status === "live");
 
+  // Only show competition chips that actually have matches right now.
+  const present = new Map<string, string>();
+  for (const m of matches) {
+    const name = leagues.find((l) => l.id === m.leagueId)?.name ?? m.leagueName;
+    if (name && !present.has(m.leagueId)) present.set(m.leagueId, name);
+  }
+  const chipLeagues = Array.from(present, ([id, name]) => ({
+    id,
+    name,
+    badge: leagues.find((l) => l.id === id)?.badge ?? "⚽",
+  }));
+
   return (
     <Page
       title="Live now"
@@ -75,7 +87,7 @@ function LivePage() {
         <Chip active={leagueId === null} onClick={() => setLeagueId(null)}>
           All leagues
         </Chip>
-        {leagues.map((l) => (
+        {chipLeagues.map((l) => (
           <Chip
             key={l.id}
             active={leagueId === l.id}

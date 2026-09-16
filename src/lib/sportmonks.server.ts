@@ -14,9 +14,27 @@ export const LEAGUE_MAP: Record<string, number> = {
   epl: 8,
   lal: 564,
   ucl: 2,
+  uel: 5,
+  uecl: 2286,
   bun: 82,
   sea: 384,
   lig: 301,
+  ere: 72,
+  efl: 27,
+  fac: 24,
+  cha: 9,
+  cdr: 570,
+  cit: 390,
+  dfb: 109,
+  spl: 501,
+  bel: 208,
+  tur: 600,
+  mls: 779,
+  bra: 648,
+  arg: 636,
+  afc: 1117,
+  wcq: 711,
+  unl: 1538,
 };
 
 const REVERSE_LEAGUE: Record<number, string> = Object.fromEntries(
@@ -41,6 +59,44 @@ async function api<T>(path: string, params: Record<string, string>, ttlMs: numbe
   const json = (await res.json()) as { data: T };
   cache.set(key, { at: Date.now(), value: json.data });
   return json.data;
+}
+
+/** Same as `api`, but follows pagination up to `maxPages`. */
+async function apiPaged<T>(
+  path: string,
+  params: Record<string, string>,
+  ttlMs: number,
+  maxPages = 5,
+): Promise<T[]> {
+  const token = process.env["SPORTMONKS_API_TOKEN"];
+  if (!token) throw new Error("SPORTMONKS_API_TOKEN is not configured");
+
+  const key = `paged:${path}?${new URLSearchParams(params).toString()}`;
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < ttlMs) return hit.value as T[];
+
+  const out: T[] = [];
+  let page = 1;
+  while (page <= maxPages) {
+    const qs = new URLSearchParams({ ...params, page: String(page), api_token: token });
+    const res = await fetch(`${BASE}${path}?${qs.toString()}`, {
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) {
+      if (out.length > 0) break;
+      throw new Error(`SportMonks ${res.status}: ${await res.text().catch(() => "")}`);
+    }
+    const json = (await res.json()) as {
+      data: T[];
+      pagination?: { has_more?: boolean };
+    };
+    out.push(...(json.data ?? []));
+    if (!json.pagination?.has_more) break;
+    page += 1;
+  }
+
+  cache.set(key, { at: Date.now(), value: out });
+  return out;
 }
 
 /* ------------------------------- mapping -------------------------------- */
@@ -120,7 +176,10 @@ function currentScore(fx: SmFixture, side: "home" | "away"): number | null {
 function minuteOf(fx: SmFixture): number | undefined {
   const ticking = fx.periods?.find((p) => p.ticking);
   if (ticking?.minutes != null) return ticking.minutes;
-  return undefined;
+  const minutes = (fx.periods ?? [])
+    .map((p) => p.minutes)
+    .filter((m): m is number => typeof m === "number");
+  return minutes.length > 0 ? Math.max(...minutes) : undefined;
 }
 
 const EVENT_TYPES: Record<number, MatchEvent["type"]> = {
@@ -179,6 +238,7 @@ function toMatch(fx: SmFixture): Match | null {
   const match: Match = {
     id: String(fx.id),
     leagueId,
+    ...(fx.league?.name ? { leagueName: fx.league.name } : {}),
     home: toTeam(home),
     away: toTeam(away),
     homeScore: status === "upcoming" ? null : (currentScore(fx, "home") ?? 0),
@@ -203,26 +263,46 @@ const LIST_INCLUDE = "participants;scores;state;league;venue;periods";
 const DETAIL_INCLUDE = `${LIST_INCLUDE};events;statistics.type;tvstations.tvstation`;
 const LEAGUE_FILTER = Object.values(LEAGUE_MAP).join(",");
 
+/** Anything kicking off in this window is listed. */
 export async function fetchMatches(): Promise<Match[]> {
   const now = Date.now();
   const from = ymd(new Date(now - 36 * 3600_000));
   const to = ymd(new Date(now + 72 * 3600_000));
 
-  const data = await api<SmFixture[]>(
-    `/fixtures/between/${from}/${to}`,
-    {
-      include: LIST_INCLUDE,
-      filters: `fixtureLeagues:${LEAGUE_FILTER}`,
-      per_page: "100",
-      order: "starting_at",
-    },
-    20_000,
-  );
+  // Scheduled/finished fixtures for the tracked competitions, plus every match
+  // currently in play across the whole feed so a live game is never missing.
+  const [scheduled, inplay] = await Promise.all([
+    apiPaged<SmFixture>(
+      `/fixtures/between/${from}/${to}`,
+      {
+        include: LIST_INCLUDE,
+        filters: `fixtureLeagues:${LEAGUE_FILTER}`,
+        per_page: "100",
+        order: "starting_at",
+      },
+      20_000,
+      5,
+    ),
+    api<SmFixture[]>(`/livescores/inplay`, { include: LIST_INCLUDE }, 10_000).catch(
+      () => [] as SmFixture[],
+    ),
+  ]);
 
-  return data
-    .map(toMatch)
-    .filter((m): m is Match => m !== null)
-    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+  const byId = new Map<string, Match>();
+  for (const fx of [...scheduled, ...inplay]) {
+    const m = toMatch(fx);
+    if (!m) continue;
+    byId.set(m.id, m); // in-play data wins on conflict
+  }
+
+  // Live matches first, then what's coming up, then results.
+  const rank = { live: 0, upcoming: 1, finished: 2 } as const;
+  return Array.from(byId.values()).sort((a, b) => {
+    if (rank[a.status] !== rank[b.status]) return rank[a.status] - rank[b.status];
+    const ka = new Date(a.kickoff).getTime();
+    const kb = new Date(b.kickoff).getTime();
+    return a.status === "finished" ? kb - ka : ka - kb;
+  });
 }
 
 export async function fetchMatch(id: string): Promise<Match | null> {

@@ -176,7 +176,10 @@ function currentScore(fx: SmFixture, side: "home" | "away"): number | null {
 function minuteOf(fx: SmFixture): number | undefined {
   const ticking = fx.periods?.find((p) => p.ticking);
   if (ticking?.minutes != null) return ticking.minutes;
-  return undefined;
+  const minutes = (fx.periods ?? [])
+    .map((p) => p.minutes)
+    .filter((m): m is number => typeof m === "number");
+  return minutes.length > 0 ? Math.max(...minutes) : undefined;
 }
 
 const EVENT_TYPES: Record<number, MatchEvent["type"]> = {

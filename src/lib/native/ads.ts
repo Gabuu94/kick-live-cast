@@ -117,8 +117,7 @@ export async function maybeShowInterstitial(everyNthView = 3): Promise<void> {
 /* Rewarded ads — used to unlock the HD stream / remove ads for a while */
 /* ------------------------------------------------------------------ */
 
-export const REWARDED_UNIT =
-  import.meta.env["VITE_ADMOB_REWARDED_ID"] ?? "ca-app-pub-3940256099942544/5224354917";
+export const REWARDED_UNIT = ADMOB_UNITS.rewarded;
 
 let rewardedReady = false;
 

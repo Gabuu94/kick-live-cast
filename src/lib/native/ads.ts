@@ -6,17 +6,30 @@ import { ensureConsent } from "./consent";
  * These are Google's official TEST ids — replace with your own AdMob unit ids
  * before publishing to the Play Store, and set VITE_ADMOB_TESTING=false.
  */
-export const ADMOB_UNITS = {
-  banner:
-    import.meta.env["VITE_ADMOB_BANNER_ID"] ?? "ca-app-pub-3940256099942544/6300978111",
-  interstitial:
-    import.meta.env["VITE_ADMOB_INTERSTITIAL_ID"] ?? "ca-app-pub-3940256099942544/1033173712",
-  rewardedInterstitial:
-    import.meta.env["VITE_ADMOB_REWARDED_INTERSTITIAL_ID"] ??
-    "ca-app-pub-3940256099942544/5354046379",
+const TESTING = import.meta.env["VITE_ADMOB_TESTING"] !== "false";
+
+// Google's official AdMob test units — always safe to request, they never
+// touch the real account. Used automatically whenever TESTING is true.
+const GOOGLE_TEST_UNITS = {
+  banner: "ca-app-pub-3940256099942544/6300978111",
+  interstitial: "ca-app-pub-3940256099942544/1033173712",
+  rewardedInterstitial: "ca-app-pub-3940256099942544/5354046379",
+  rewarded: "ca-app-pub-3940256099942544/5224354917",
 };
 
-const TESTING = import.meta.env["VITE_ADMOB_TESTING"] !== "false";
+// Real production units from .env.production — only used when TESTING=false.
+const PROD_UNITS = {
+  banner:
+    import.meta.env["VITE_ADMOB_BANNER_ID"] ?? GOOGLE_TEST_UNITS.banner,
+  interstitial:
+    import.meta.env["VITE_ADMOB_INTERSTITIAL_ID"] ?? GOOGLE_TEST_UNITS.interstitial,
+  rewardedInterstitial:
+    import.meta.env["VITE_ADMOB_REWARDED_INTERSTITIAL_ID"] ??
+    GOOGLE_TEST_UNITS.rewardedInterstitial,
+  rewarded: import.meta.env["VITE_ADMOB_REWARDED_ID"] ?? GOOGLE_TEST_UNITS.rewarded,
+};
+
+export const ADMOB_UNITS = TESTING ? GOOGLE_TEST_UNITS : PROD_UNITS;
 
 let initialized = false;
 let bannerVisible = false;
